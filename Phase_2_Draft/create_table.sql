@@ -131,7 +131,7 @@ CREATE TABLE 'InUse'(
     Number int NOT NULL,
     StartDate datetime NOT NULL,
     ReturnDate datetime NOT NULL
-    PRIMARY KEY(ID, Abbreviation, Number),
+    PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation)
         REFERENCES 'Incident' (Abbreviation),
     FOREIGN KEY (Number)
@@ -142,7 +142,7 @@ CREATE TABLE 'LastUsed'(
     ID int NOT NULL,
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
-    PRIMARY KEY(ID, Abbreviation, Number),
+    PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation)
         REFERENCES 'Incident' (Abbreviation),
     FOREIGN KEY (Number)
