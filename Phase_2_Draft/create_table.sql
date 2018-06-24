@@ -44,7 +44,6 @@ CREATE TABLE 'Individuals'(
 
 CREATE TABLE 'TimeUnit'(
     Name varchar(50) NOT NULL,
-    LengthOfUnit int NOT NULL,
     PRIMARY KEY(Name)
 );
 
