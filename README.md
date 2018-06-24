@@ -15,5 +15,8 @@ https://docs.google.com/document/d/1zmg7turxkdobxP9Q2BSk7ei_aZKAM0KcnS5zYa5AzxU/
 Phase 2 Relational Mapping:
 https://docs.google.com/drawings/d/1b-djMRrFBSFIsNMd6-g9oGzzxIQb6MY5WJkcpnHsB0Y/edit?usp=sharing
 
+Peijun's Revised Version of Rel Mapping
+https://drive.google.com/file/d/1T7mI7a9d5YVR-7YX92NscJY9yz5eEuha/view?usp=sharing
+
 EER Modifications:
 https://docs.google.com/document/d/1xdZtIr4EC2u6o8ZBtnlkjMLtCW6-wvsRARKapXM8rhY/edit?usp=sharing
