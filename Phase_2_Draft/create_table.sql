@@ -1,4 +1,5 @@
 
+
 -- CREATE DATABASE
 
 CREATE DATABASE IF NOT EXISTS cs6400_summer18_team010 
@@ -8,7 +9,6 @@ USE cs6400_summer18_team010;
 
 
 -- Tables 
-
 
 CREATE TABLE `User`(
     Username varchar(50) NOT NULL,
@@ -56,7 +56,6 @@ CREATE TABLE `Individuals`(
 
 CREATE TABLE `TimeUnit`(
     Name varchar(50) NOT NULL,
-    LengthOfUnit int NOT NULL,
     PRIMARY KEY(Name)
 );
 
@@ -129,12 +128,14 @@ CREATE TABLE `Requests`(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     RequestDate datetime NOT NULL,
-    ReturnDate datetime NOT NULL
+    ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID, Abbreviation, Number),
     FOREIGN KEY (Abbreviation)
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
         REFERENCES `Incident` (Number)
+    FOREIGN KEY (Abbreviation, Number)
+        REFERENCES `Incident` (Abbreviation, Number)
 );
 
 CREATE TABLE `InUse`(
@@ -142,12 +143,14 @@ CREATE TABLE `InUse`(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     StartDate datetime NOT NULL,
-    ReturnDate datetime NOT NULL
+    ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation)
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
         REFERENCES `Incident` (Number)
+    FOREIGN KEY (Abbreviation, Number)
+        REFERENCES `Incident` (Abbreviation, Number)
 );
 
 CREATE TABLE `LastUsed`(
@@ -159,4 +162,6 @@ CREATE TABLE `LastUsed`(
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
         REFERENCES `Incident` (Number)
+    FOREIGN KEY (Abbreviation, Number)
+        REFERENCES `Incident` (Abbreviation, Number)
 );
