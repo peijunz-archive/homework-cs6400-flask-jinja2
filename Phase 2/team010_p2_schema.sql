@@ -28,7 +28,7 @@ CREATE TABLE `GovAgencies`(
 CREATE TABLE `Companies`(
     Username varchar(50) NOT NULL,
     Location varchar(50) NOT NULL,
-    NumberOFEmployees int NOT NULL,
+    NumberofEmployees int NOT NULL,
     PRIMARY KEY(Username),
     FOREIGN KEY(Username)
         REFERENCES `User` (Username)
@@ -36,10 +36,7 @@ CREATE TABLE `Companies`(
 
 CREATE TABLE `Municipalities`(
     Username varchar(50) NOT NULL,
-    City varchar(50) NULL,
-    County varchar(50) NULL,
-    State varchar(50) NULL,
-    Country varchar(50) NULL,
+    Category varchar(10) NOT NULL,
     PRIMARY KEY(Username),
     FOREIGN KEY(Username)
         REFERENCES `User` (Username)
@@ -61,44 +58,45 @@ CREATE TABLE `TimeUnit`(
 
 CREATE TABLE `ESF`(
     Number int NOT NULL,
-    Description varchar(50) NOT NULL,
+    Description varchar(100) NOT NULL,
     PRIMARY KEY(Number)
 );
 
 CREATE TABLE `Resources`(
     ID int NOT NULL,
+    Name varchar(50) NOT NULL,
     Latitude float NOT NULL,
     Longitude float NOT NULL,
-    Model varchar(50) NOT NULL,
-    MaxDistance int NOT NULL,
+    Model varchar(50) NULL,
+    MaxDistance int NULL,
     Cost decimal NOT NULL,
     PrimaryESFNumber int NOT NULL,
-    Name varchar(50) NOT NULL,
+    UnitName varchar(50) NOT NULL,
     Username varchar(50) NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY (PrimaryESFNumber)
         REFERENCES `ESF` (Number),
-    FOREIGN KEY (Name)
+    FOREIGN KEY (UnitName)
         REFERENCES `TimeUnit` (Name),
     FOREIGN KEY (Username)
         REFERENCES `User` (Username)
 );
 
 CREATE TABLE `AdditionalESF`(
-    ID int NOT NULL,
-    Number int NOT NULL,
-    PRIMARY KEY(ID, Number),
-    FOREIGN KEY (ID)
+    ResourceID int NOT NULL,
+    ESFNumber int NOT NULL,
+    PRIMARY KEY(ResourceID, ESFNumber),
+    FOREIGN KEY (ResourceID)
         REFERENCES `Resources` (ID),
-    FOREIGN KEY (Number)
+    FOREIGN KEY (ESFNumber)
         REFERENCES `ESF` (Number)
 );
 
 CREATE TABLE `Capabilities`(
-    ID int NOT NULL,
+    ResourceID int NOT NULL,
     CapabilityName varchar(50) NOT NULL,
-    PRIMARY KEY(ID, CapabilityName),
-    FOREIGN KEY (ID)
+    PRIMARY KEY(ResourceID, CapabilityName),
+    FOREIGN KEY (ResourceID)
         REFERENCES `Resources` (ID)
 );
 
@@ -124,32 +122,38 @@ CREATE TABLE `Incidents`(
 );
 
 CREATE TABLE `Requests`(
-    ID int NOT NULL,
+    ResourceID int NOT NULL,
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     RequestDate datetime NOT NULL,
     ReturnDate datetime NOT NULL,
-    PRIMARY KEY(ID, Abbreviation, Number),
+    PRIMARY KEY(ResourceID, Abbreviation, Number),
+    FOREIGN KEY(ResourceID)
+        REFERENCES `Resources` (ID),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incidents` (Abbreviation, Number)
 );
 
 CREATE TABLE `InUse`(
-    ID int NOT NULL,
+    ResourceID int NOT NULL,
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     StartDate datetime NOT NULL,
     ReturnDate datetime NOT NULL,
-    PRIMARY KEY(ID),
+    PRIMARY KEY(ResourceID),
+    FOREIGN KEY(ResourceID)
+        REFERENCES `Resources` (ID),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incidents` (Abbreviation, Number)
 );
 
 CREATE TABLE `LastUsed`(
-    ID int NOT NULL,
+    ResourceID int NOT NULL,
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
-    PRIMARY KEY(ID),
+    PRIMARY KEY(ResourceID),
+    FOREIGN KEY(ResourceID)
+        REFERENCES `Resources` (ID),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incidents` (Abbreviation, Number)
 );
