@@ -116,7 +116,7 @@ CREATE TABLE 'Requests'(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     RequestDate datetime NOT NULL,
-    ReturnDate datetime NOT NULL
+    ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID, Abbreviation, Number),
     FOREIGN KEY (Abbreviation)
         REFERENCES 'Incident' (Abbreviation),
@@ -129,7 +129,7 @@ CREATE TABLE 'InUse'(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     StartDate datetime NOT NULL,
-    ReturnDate datetime NOT NULL
+    ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation)
         REFERENCES 'Incident' (Abbreviation),
