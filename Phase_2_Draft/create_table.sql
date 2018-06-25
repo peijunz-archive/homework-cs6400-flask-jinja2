@@ -130,10 +130,6 @@ CREATE TABLE `Requests`(
     RequestDate datetime NOT NULL,
     ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID, Abbreviation, Number),
-    FOREIGN KEY (Abbreviation)
-        REFERENCES `Incident` (Abbreviation),
-    FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
@@ -145,10 +141,6 @@ CREATE TABLE `InUse`(
     StartDate datetime NOT NULL,
     ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID),
-    FOREIGN KEY (Abbreviation)
-        REFERENCES `Incident` (Abbreviation),
-    FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
@@ -158,10 +150,6 @@ CREATE TABLE `LastUsed`(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     PRIMARY KEY(ID),
-    FOREIGN KEY (Abbreviation)
-        REFERENCES `Incident` (Abbreviation),
-    FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
