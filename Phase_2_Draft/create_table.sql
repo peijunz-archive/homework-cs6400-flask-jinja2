@@ -102,13 +102,13 @@ CREATE TABLE `Capabilities`(
         REFERENCES `Resources` (ID)
 );
 
-CREATE TABLE `Declaration`(
+CREATE TABLE `Declarations`(
     Abbreviation char(2) NOT NULL,
     Name varchar(50) NOT NULL,
     PRIMARY KEY(Abbreviation)
 );
 
-CREATE TABLE `Incident`(
+CREATE TABLE `Incidents`(
     Abbreviation char(2) NOT NULL,
     Number int NOT NULL,
     Date datetime NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE `Incident`(
     Username varchar(50) NOT NULL,
     PRIMARY KEY(Abbreviation, Number),
     FOREIGN KEY (Abbreviation)
-        REFERENCES `Declaration` (Abbreviation),
+        REFERENCES `Declarations` (Abbreviation),
     FOREIGN KEY (Username)
         REFERENCES `User` (Username)
 );
@@ -131,7 +131,7 @@ CREATE TABLE `Requests`(
     ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID, Abbreviation, Number),
     FOREIGN KEY (Abbreviation, Number)
-        REFERENCES `Incident` (Abbreviation, Number)
+        REFERENCES `Incidents` (Abbreviation, Number)
 );
 
 CREATE TABLE `InUse`(
@@ -142,7 +142,7 @@ CREATE TABLE `InUse`(
     ReturnDate datetime NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation, Number)
-        REFERENCES `Incident` (Abbreviation, Number)
+        REFERENCES `Incidents` (Abbreviation, Number)
 );
 
 CREATE TABLE `LastUsed`(
@@ -151,5 +151,5 @@ CREATE TABLE `LastUsed`(
     Number int NOT NULL,
     PRIMARY KEY(ID),
     FOREIGN KEY (Abbreviation, Number)
-        REFERENCES `Incident` (Abbreviation, Number)
+        REFERENCES `Incidents` (Abbreviation, Number)
 );
