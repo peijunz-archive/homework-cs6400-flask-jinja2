@@ -133,7 +133,7 @@ CREATE TABLE `Requests`(
     FOREIGN KEY (Abbreviation)
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
+        REFERENCES `Incident` (Number),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
@@ -148,7 +148,7 @@ CREATE TABLE `InUse`(
     FOREIGN KEY (Abbreviation)
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
+        REFERENCES `Incident` (Number),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
@@ -161,7 +161,7 @@ CREATE TABLE `LastUsed`(
     FOREIGN KEY (Abbreviation)
         REFERENCES `Incident` (Abbreviation),
     FOREIGN KEY (Number)
-        REFERENCES `Incident` (Number)
+        REFERENCES `Incident` (Number),
     FOREIGN KEY (Abbreviation, Number)
         REFERENCES `Incident` (Abbreviation, Number)
 );
