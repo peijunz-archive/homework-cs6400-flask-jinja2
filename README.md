@@ -23,3 +23,20 @@ https://docs.google.com/document/d/1xdZtIr4EC2u6o8ZBtnlkjMLtCW6-wvsRARKapXM8rhY/
 
 Abstract Code:
 https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/edit?usp=sharing
+
+## Phase 3
+### Instructions to start backend service:
+1. Set up mysql database on local machine
+2. Install python 3.6.2
+3. Install pipenv (http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+4. cd into Phase 3 Code directory
+5. Run this command: pipenv install
+6. In app.py file, you may need to change connection strings at line 5.
+7. Run this command: pipenv run python app.py
+8. Go to 127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".
+
+### Services available:
+- Login
+	First, you have to have one row in user table to be able test this end point.
+	Sample request: 127.0.0.1:5000/authenticate?UserName=test&Password=test
+	Sample result: **{"status": "success"}**
