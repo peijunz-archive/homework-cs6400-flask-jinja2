@@ -38,5 +38,5 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 ### Backend services available now:
 - Login   
 	First, you have to have one row in user table to be able test this end point.    
-	Sample request: 127.0.0.1:5000/authenticate?UserName=test&Password=test     
+	Sample request: (127.0.0.1:5000/authenticate?UserName=test&Password=test)     
 	Sample result: `{"status": "success"}`
