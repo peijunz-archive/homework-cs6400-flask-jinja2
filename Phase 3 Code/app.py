@@ -8,8 +8,8 @@ db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010" )
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
 
-@app.route("/Authenticate")
-def Authenticate():
+@app.route("/login")
+def login():
         username = request.args.get('UserName')
         password = request.args.get('Password')
         cursor = db.cursor()
