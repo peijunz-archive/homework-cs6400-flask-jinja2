@@ -30,10 +30,10 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 2. Install python 3.6.2
 3. Install pipenv (http://docs.python-guide.org/en/latest/dev/virtualenvs/)
 4. cd into Phase 3 Code directory
-5. Run this command: pipenv install
+5. Run this command: `pipenv install`
 6. In app.py file, you may need to change connection strings at line 5.
-7. Run this command: pipenv run python app.py
-8. Go to 127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".    
+7. Run this command: `pipenv run python app.py`
+8. Go to http://127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".    
 To add a new endpoint, follow the login endpoint sample.   
 To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python_database_access.htm
 
