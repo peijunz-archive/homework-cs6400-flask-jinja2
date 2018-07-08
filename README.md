@@ -35,9 +35,8 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 7. Run this command: pipenv run python app.py
 8. Go to 127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".
 
-### Services available:
-- Login 
-
-	First, you have to have one row in user table to be able test this end point.
-	Sample request: 127.0.0.1:5000/authenticate?UserName=test&Password=test
-	Sample result: **{"status": "success"}**
+### Backend services available now:
+- Login \n
+	First, you have to have one row in user table to be able test this end point. \n
+	Sample request: 127.0.0.1:5000/authenticate?UserName=test&Password=test  \n
+	Sample result: `{"status": "success"}`
