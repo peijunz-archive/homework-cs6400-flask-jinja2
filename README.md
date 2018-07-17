@@ -29,7 +29,7 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 1. Set up mysql database on local machine
 2. Install python 3.6.2
 3. Install pipenv (http://docs.python-guide.org/en/latest/dev/virtualenvs/)
-4. cd into Phase 3 Code directory
+4. cd into Phase_3_Code directory
 5. Run this command: `pipenv install`
 6. In app.py file, you may need to change connection strings at line 5.
 7. Run this command: `pipenv run python app.py`
