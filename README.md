@@ -77,7 +77,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	[{"Abbreviation": "ED", "Date": "Wed, 18 Jul 2018 00:00:00 GMT", "Description": "test", "Latitude": 40.0, "Longitude": 40.0, "Name": 2}]
 	```
 - Add Incident   
-**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**   
 	POST to /addIncident   
 	Sample JSON Body:
 	```
@@ -92,7 +92,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	```
 
 - Add Resource   
-**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**   
 	POST to /addResource   
 	Sample JSON Body:
 	```
