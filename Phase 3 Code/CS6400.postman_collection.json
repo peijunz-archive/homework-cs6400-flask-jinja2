@@ -1,0 +1,78 @@
+{
+	"id": "bfe49a09-184a-15a0-4225-577332190d8e",
+	"name": "CS6400",
+	"description": "",
+	"order": [
+		"b69c4e3f-27d9-1fff-b7de-75d916f5f22a",
+		"d3113d85-1aec-811b-58a6-ad233fe1943c"
+	],
+	"folders": [],
+	"folders_order": [],
+	"timestamp": 1531790972918,
+	"owner": 0,
+	"public": false,
+	"requests": [
+		{
+			"id": "b69c4e3f-27d9-1fff-b7de-75d916f5f22a",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://127.0.0.1:5000/addResource",
+			"queryParams": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"preRequestScript": null,
+			"method": "POST",
+			"collectionId": "bfe49a09-184a-15a0-4225-577332190d8e",
+			"data": [],
+			"dataMode": "raw",
+			"name": "Add Resource",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1531790979270,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"rawModeData": "{\n\t\"name\": \"resource1\",\n\t\"latitude\": 40,\n\t\"longitude\": 40,\n\t\"model\": \"test\",\n\t\"maxDistance\": 100,\n\t\"primaryESFNumber\": 1,\n\t\"cost\": 100,\n\t\"unitName\": \"Hour\",\n\t\"username\": \"gov\",\n\t\"additionalESFNumbers\": [2, 3],\n\t\"capabilities\": [\"cap1\", \"cap2\"]\n}"
+		},
+		{
+			"id": "d3113d85-1aec-811b-58a6-ad233fe1943c",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://127.0.0.1:5000/addIncident",
+			"queryParams": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"preRequestScript": null,
+			"method": "POST",
+			"collectionId": "bfe49a09-184a-15a0-4225-577332190d8e",
+			"data": [],
+			"dataMode": "raw",
+			"name": "Add Incident",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1531790988775,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"rawModeData": "{\n\t\"abbreviation\": \"ED\",\n\t\"date\": \"2018/7/18\",\n\t\"description\": \"test\",\n\t\"latitude\": 40,\n\t\"longitude\": 40,\n\t\"username\": \"gov\"\n}"
+		}
+	]
+}

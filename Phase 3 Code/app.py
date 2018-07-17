@@ -1,5 +1,6 @@
 from flask import Flask,request,jsonify,json
 import pymysql
+import copy
 
 app = Flask(__name__)
 db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010" )
@@ -10,8 +11,8 @@ def index():
 
 @app.route("/login")
 def login():
-        username = request.args.get('UserName')
-        password = request.args.get('Password')
+        username = request.args.get('username')
+        password = request.args.get('password')
         cursor = db.cursor()
         sql = "SELECT * from user where Username='" + username + "' and Password='" + password + "'"
         result={}
@@ -33,12 +34,12 @@ def login():
 
 @app.route("/mainMenu")
 def mainMenu():
-    username = request.args.get('UserName')
+    username = request.args.get('username')
     cursor = db.cursor()
     sql = "SELECT Username, Category, null, null, null, null, null FROM Municipalities WHERE Username = '"+ username + "' UNION \
             SELECT Username, null, Location, NumberofEmployees, null, null, null FROM Companies WHERE Username = '" + username+"' \
             UNION \
-            SELECT Username, null, null, null, AgencyNameLocationOffice, null, null FROM GovAgencies WHERE Username = '" + username +"' \
+            SELECT Username, null, null, null, AgencyNameLocalOffice, null, null FROM GovAgencies WHERE Username = '" + username +"' \
             UNION \
             SELECT Username, null, null, null, null, JobTitle, DateHired FROM Individuals WHERE Username = '" + username + "'"
     result={}
@@ -61,7 +62,7 @@ def mainMenu():
                 result['Type'] = 'Municipality'
             elif result['Location'] is not None:
                 result['Type'] = 'Company'
-            elif reuslt['AgencyNameLocationOffice'] is not None:
+            elif result['AgencyNameLocationOffice'] is not None:
                 result['Type'] = 'GovAgency'
             else:
                 result['Type'] = 'Individual'
@@ -81,13 +82,13 @@ def getESF():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
         if data is None:
-            result['status']='No ESF found.'
+            result.append({'status': 'No ESF Found.'})
         else:
             esf={}
             for row in data:
                 esf['Name'] = row[0]
                 esf['Description'] = row[1]
-                result.append(esf)
+                result.append(copy.copy(esf))
         return json.dumps(result)
     except:
         print ("Error: unable to fetch data")
@@ -103,12 +104,12 @@ def getTimeUnit():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
         if data is None:
-            result['status']='No Time Unit found.'
+            result.append({'status': 'No Time Unit Found.'})
         else:
             tu={}
             for row in data:
                 tu['Name'] = row[0]
-                result.append(tu)
+                result.append(copy.copy(tu))
         return json.dumps(result)
     except:
         print ("Error: unable to fetch data")
@@ -125,20 +126,21 @@ def getDeclarations():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
         if data is None:
-            result['status']='No declarations found.'
+            result.append({'status': 'No Declarations Found.'})
         else:
             dc={}
             for row in data:
                 dc['Abbreviation'] = row[0]
                 dc['Name'] = row[1]
-                result.append(dc)
+                result.append(copy.copy(dc))
         return json.dumps(result)
     except:
         print ("Error: unable to fetch data")
 
-@app.route("/addResource", methods=['POST'])
-def addResource():
+@app.route("/addIncident", methods=['POST'])
+def addIncident():
     req_data = request.get_json()
+    print(req_data)
     abbrv = req_data['abbreviation']
     date = req_data['date']
     desc = req_data['description']
@@ -146,20 +148,24 @@ def addResource():
     longitude = req_data['longitude']
     username = req_data['username']
     cursor = db.cursor()
-    sql = "INSERT INTO Incidents (Abbreivation, Date, Description, Latitude, Longitude, Username) VALUES (%s, STR_TO_DATE(%s, '%%Y-%%m-%%dT%%H:%%i:%%sZ'),  %s, %d, %d, %s)" % \
+    sql = "INSERT INTO Incidents (Abbreviation, Date, Description, Latitude, Longitude, Username) VALUES ('%s', '%s', '%s', %d, %d, '%s')" % \
     (abbrv, date, desc, latitude, longitude, username)
+    print(sql)
     try:
         # Execute the SQL command
         cursor.execute(sql)
         # Commit your changes in the database
         db.commit()
+        return 'success'
     except:
         # Rollback in case there is any error
         db.rollback()
+        return 'failed'
 
-@app.route("/addIncident", methods=['POST'])
-def addIncident():
+@app.route("/addResource", methods=['POST'])
+def addResource():
     req_data = request.get_json()
+    print(req_data)
     name = req_data['name']
     lat = req_data['latitude']
     longi = req_data['longitude']
@@ -173,9 +179,10 @@ def addIncident():
     capabilities = req_data['capabilities']
     cursor = db.cursor()
     sql = "INSERT INTO Resources (Name, Latitude, Longitude, Model, MaxDistance, PrimaryESFNumber, Cost, UnitName, Username) \
-    VALUES (%s, %d, %d, %s, %d, %d, %d, %s, %s)" % \
-    (name, latitude, longitude, model, maxDis, primEsf, cost, unitName, username)
+    VALUES ('%s', %d, %d, '%s', %d, %d, %d, '%s', '%s')" % \
+    (name, lat, longi, model, maxDis, primEsf, cost, unitName, username)
     try:
+        print(sql)
         # Execute the SQL command
         cursor.execute(sql)
         resourceId = cursor.lastrowid
@@ -183,19 +190,21 @@ def addIncident():
             sql = "INSERT INTO AdditionalESF VALUES (%d, %d)" % (resourceId, esf)
             cursor.execute(sql)
         for cap in capabilities:
-            sql = "INSERT INTO Capabilities VALUES (%d, %s)" % (resourceId, cap)
+            sql = "INSERT INTO Capabilities VALUES (%d, '%s')" % (resourceId, cap)
             cursor.execute(sql)
         # Commit your changes in the database
         db.commit()
+        return 'success'
     except:
         # Rollback in case there is any error
         db.rollback()
+        return 'failed'
 
 @app.route("/getIncidentsForUser")
 def getIncidentsForUser():
-    username = request.args.get('UserName')
+    username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Abbreviation, Number, Description FROM Incidents WHERE Username = %s;" % username
+    sql = "SELECT Abbreviation, Number, Description, Date, Longitude, Latitude FROM Incidents WHERE Username = '%s'" % username
     result=[]
     try:
         # Execute the SQL command
@@ -203,14 +212,17 @@ def getIncidentsForUser():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
         if data is None:
-            result['status']='No incidents found.'
+            result.append({'status': 'No Incidents Found.'})
         else:
             incident={}
             for row in data:
                 incident['Abbreviation'] = row[0]
                 incident['Name'] = row[1]
                 incident['Description'] = row[2]
-                result.append(incident)
+                incident['Date'] = row[3]
+                incident['Longitude'] = row[4]
+                incident['Latitude'] = row[5]
+                result.append(copy.copy(incident))
         return json.dumps(result)
     except:
         print ("Error: unable to fetch data")

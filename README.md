@@ -40,5 +40,73 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 ### Backend services available now:
 - Login   
 	First, you have to have one row in user table to be able test this end point.    
-	Sample request: <http://127.0.0.1:5000/login?UserName=test&Password=test>     
-	Sample result: `{"status": "success"}`
+	Sample request: <http://127.0.0.1:5000/login?username=test&password=test>     
+	Sample result: 
+	```
+	{"status": "success"}
+	```
+
+- Main Menu/User information   
+	http://127.0.0.1:5000/mainMenu?username=gov   
+	Sample result:
+	```
+	{"AgencyNameLocationOffice": "agencyName", "Category": null, "DateHired": null, "JobTitle": null, "Location": null, "NumberofEmployees": null, "Type": "GovAgency", "Username": "gov"}
+	```
+- Get ESF   
+	http://127.0.0.1:5000/getESF   
+	Sample result:
+	```
+	[{"Description": "Transportation", "Name": 1}, {"Description": "Communications", "Name": 2}, {"Description": "Public Works and Engineering", "Name": 3}, {"Description": "Firefighting", "Name": 4}, {"Description": "Emergency Management", "Name": 5}, {"Description": "Mass Care, Emergency Assistance, Housing, and Human Services", "Name": 6}, {"Description": "Logistics Management and Resource Support", "Name": 7}, {"Description": "Public Health and Medical Services", "Name": 8}, {"Description": "Search and Rescue", "Name": 9}, {"Description": "Oil and Hazardous Materials Response", "Name": 10}, {"Description": "Agriculture and Natural Resources", "Name": 11}, {"Description": "Energy", "Name": 12}, {"Description": "Public Safety and Security", "Name": 13}, {"Description": "Long-Term Community Recovery", "Name": 14}, {"Description": "External Affairs", "Name": 15}]
+	```
+- Get Time Unit   
+	http://127.0.0.1:5000/getTimeUnit   
+	Sample result:
+	```
+	[{"Name": "Day"}, {"Name": "Hour"}, {"Name": "Week"}]
+	```
+- Get Declarations   
+	http://127.0.0.1:5000/getDeclarations   
+	Sample result: 
+	```
+	[{"Abbreviation": "ED", "Name": "Emergency"}, {"Abbreviation": "FM", "Name": "Fire Management Assistance"}, {"Abbreviation": "FS", "Name": "Fire Suppression Authorization"}, {"Abbreviation": "MD", "Name": "Major Disaster"}]
+	```
+- Get Incidents for user   
+	http://127.0.0.1:5000/getIncidentsForUser?username=gov   
+	Sample result:
+	```
+	[{"Abbreviation": "ED", "Date": "Wed, 18 Jul 2018 00:00:00 GMT", "Description": "test", "Latitude": 40.0, "Longitude": 40.0, "Name": 2}]
+	```
+- Add Incident   
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+	POST to /addIncident   
+	Sample JSON Body:
+	```
+	{
+		"abbreviation": "ED",
+		"date": "2018/7/18",
+		"description": "test",
+		"latitude": 40,
+		"longitude": 40,
+		"username": "gov"
+	}
+	```
+
+- Add Resource   
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+	POST to /addResource   
+	Sample JSON Body:
+	```
+	{
+		"name": "resource1",
+		"latitude": 40,
+		"longitude": 40,
+		"model": "test",
+		"maxDistance": 100,
+		"primaryESFNumber": 1,
+		"cost": 100,
+		"unitName": "Hour",
+		"username": "gov",
+		"additionalESFNumbers": [2, 3],
+		"capabilities": ["cap1", "cap2"]
+	}
+	```

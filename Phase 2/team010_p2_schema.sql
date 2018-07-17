@@ -63,7 +63,7 @@ CREATE TABLE `ESF`(
 );
 
 CREATE TABLE `Resources`(
-    ID int NOT NULL,
+    ID int NOT NULL AUTO_INCREMENT,
     Name varchar(50) NOT NULL,
     Latitude float NOT NULL,
     Longitude float NOT NULL,
@@ -107,14 +107,14 @@ CREATE TABLE `Declarations`(
 );
 
 CREATE TABLE `Incidents`(
+    Number int NOT NULL AUTO_INCREMENT,
     Abbreviation char(2) NOT NULL,
-    Number int NOT NULL,
     Date datetime NOT NULL,
     Description varchar(50) NOT NULL,
     Longitude float NOT NULL,
     Latitude float NOT NULL,
     Username varchar(50) NOT NULL,
-    PRIMARY KEY(Abbreviation, Number),
+    PRIMARY KEY(Number, Abbreviation),
     FOREIGN KEY (Abbreviation)
         REFERENCES `Declarations` (Abbreviation),
     FOREIGN KEY (Username)
