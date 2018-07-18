@@ -7,9 +7,9 @@ db = pymysql.connect(host='localhost',port=3306, user='root',passwd='root',db='c
  
 @app.route("/")
 def index():
-        return "Welcome to Emergency Resource Management System Web Service!!!"
+        return "Welcome to Emergency Resource Management System Web Service!"
 
-@app.route("/login")
+@app.route("/login", methods = ['POST','GET'])
 def login():
         return render_template('login.html')
 
