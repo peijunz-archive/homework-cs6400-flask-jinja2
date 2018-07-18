@@ -1,4 +1,4 @@
-from flask import Flask,request,jsonify,json
+from flask import Flask,request,jsonify,json,render_template
 import pymysql
 import copy
 
@@ -7,10 +7,12 @@ db = pymysql.connect(host='localhost',port=3306, user='root',passwd='root',db='c
  
 @app.route("/")
 def index():
-        return "Welcome to Emergency Resource Management System Web Service!"
+        return "Welcome to Emergency Resource Management System Web Service!!!"
 
 @app.route("/login")
 def login():
+        return render_template('login.html')
+
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
@@ -228,4 +230,4 @@ def getIncidentsForUser():
         print ("Error: unable to fetch data")
 
 if __name__ == "__main__":
-        app.run()
+        app.run(debug = True)
