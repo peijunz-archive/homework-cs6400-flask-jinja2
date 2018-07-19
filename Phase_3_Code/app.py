@@ -243,8 +243,8 @@ def searchResults():
         keyword = ''
     pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate", 
               "FROM Resources r", 
-              "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID
-              WHERE r.Name like %%%s%%"]
+              "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID",
+              "WHERE r.Name like %%%s%%"]
     if ESFNumber!=None:
         pieces.append("AND (r.PrimaryESFNumber = %d \
         OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
@@ -285,7 +285,8 @@ def searchResults():
                 rsc['ReturnDate'] = row[4]
                 if abbrvNone!=None and number!=None and radius!=None:
                     rsc['proximity'] = row[5]
-                else rsc['proximity'] = None
+                else:
+                    rsc['proximity'] = None
                 result.append(copy.copy(rsc))
         return json.dumps(result)    
     except:
