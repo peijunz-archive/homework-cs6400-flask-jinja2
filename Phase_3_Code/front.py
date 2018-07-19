@@ -43,6 +43,46 @@ def main_menu():
     print("userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'username', 'userinfo'))
 
+@app.route("/add-resource.html")
+def add_resource():
+    print(">>> Entering Add resource", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    # TODO
+    return render_template("add-resource.html", **extract(session, 'username', 'userinfo'))
+
+@app.route("/search.html")
+def search():
+    print(">>> Entering search", session)
+    if 'username' not in session:
+    # TODO
+        return redirect("/login.html")
+    return render_template("search.html", **extract(session, 'username', 'userinfo'))
+
+@app.route("/add-incident.html")
+def add_incident():
+    print(">>> Entering Add incident", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    # TODO
+    return render_template("add-incident.html", **extract(session, 'username', 'userinfo'))
+
+@app.route("/report.html")
+def report():
+    print(">>> Entering report", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    # TODO
+    return render_template("report.html", **extract(session, 'username', 'userinfo'))
+
+@app.route("/status.html")
+def status():
+    print(">>> Entering status", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    # TODO
+    return render_template("status.html", **extract(session, 'username', 'userinfo'))
+
 @app.route("/login.html", methods=['GET', 'POST'])
 def login_page():
     print(">>> Entering login page", session)
