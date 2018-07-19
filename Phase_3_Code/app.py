@@ -69,7 +69,7 @@ def mainMenu():
 
         return json.dumps(result)
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
 
 @app.route("/getESF")
 def getESF():
@@ -91,7 +91,7 @@ def getESF():
                 result.append(copy.copy(esf))
         return json.dumps(result)
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
 
 @app.route("/getTimeUnit")
 def getTimeUnit():
@@ -112,7 +112,7 @@ def getTimeUnit():
                 result.append(copy.copy(tu))
         return json.dumps(result)
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
 
 
 @app.route("/getDeclarations")
@@ -135,7 +135,7 @@ def getDeclarations():
                 result.append(copy.copy(dc))
         return json.dumps(result)
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
 
 @app.route("/addIncident", methods=['POST'])
 def addIncident():
@@ -225,7 +225,7 @@ def getIncidentsForUser():
                 result.append(copy.copy(incident))
         return json.dumps(result)
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
