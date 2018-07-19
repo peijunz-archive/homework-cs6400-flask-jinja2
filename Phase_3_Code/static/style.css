@@ -3,17 +3,24 @@
  * Copyright 2018 CS6400 Team010
  */
 
+
 .login-panel {
-    position:absolute;
-    left:50%;
-    top:40%;
-    max-width: 500px;
     margin: auto;
-    width:300px;
-    height:200px;
-    margin:-100px 0 0 -150px;
+    margin-top: 10%;
+    margin-bottom: 20%;
+    max-width: 400px;
 }
 
+.menu-panel {
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 20%;
+    max-width: 400px;
+}
+
+body {
+    padding-top: 65px;
+}
 
 .login-panel .form-group {
     position: relative;
@@ -21,11 +28,30 @@
 
 .login-panel i{
     position: absolute;
-    left: 10px;
-    top: 8px;
-    font-size: 18px;
+    left: 9px;
+    top: 9px;
+    font-size: 14px;
 }
 
 .login-panel .form-control {
     padding-left: 32px;
+}
+
+.dropdown .fa-caret-down{
+    font-size: 16px;
+}
+.fa{
+    margin-right: 0.2em;
+    width: 1em;
+    text-align:center;
+}
+
+.hidden-text{
+    display: none;
+}
+
+@media (max-width: 800px) {
+.hidden-text{
+    display: inline;
+}
 }

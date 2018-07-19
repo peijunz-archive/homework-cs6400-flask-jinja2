@@ -1,4 +1,5 @@
 {# NOTE: This is basic template defining all resources needed #}
+{% from '_macros.html' import menus %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -19,36 +20,33 @@
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
+        {% if Username %}
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
           </button>
+        {% endif %}
           <a class="navbar-brand" href="/"><span class="fa fa-home"></span> ERMS</a>
         </div>
+        {% if Username %}
         <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav">
         <li class="dropdown dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="caret"></span> <span class="hidden-text">Menu</span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="fa fa-caret-down"></span><span class="hidden-text">Menu</span></a>
           <ul class="dropdown-menu">
-            <li><a href="add-resource"><span class="fa fa-plus-circle"></span> Add Resource</a></li>
-            <li><a href="add-incident"><span class="fa fa-map-marker-alt"></span> Add Emergency Incident</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="search.html"><span class="fa fa-search"></span> Search Resources</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="status.html"><span class="fa fa-battery-half"></span> Resource Status</a></li>
-            <li><a href="report.html"><span class="fa fa-file"></span> Resource Report</a></li>
+            {{ menus('Seperator', '') }}
           </ul>
         </li>
         </ul>
-        {% if Username %}
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#"><span class="fa fa-user"></span> {{ Username }} </a></li>
-          <li><a href="#"><span class="fa fa-sign-out-alt"></span> Logout </a></li>
+          <li><a href="#"><span class="fa fa-building"></span> {{ UserInfo }} </a></li> 
+          <li><a href="logout"><span class="fa fa-sign-out-alt"></span> Logout </a></li>
         </ul>
-        {% endif %}
         </div>
+        {% endif %}
       </div>
     </nav>
     <div class="container">

@@ -11,7 +11,7 @@ def extract(form, *keys):
         return form.to_dict()
     F = {}
     for k in keys:
-        F[k] = request.form.get(k)
+        F[k] = form.get(k)
     return F
 
 # json.dump is able to convert dict F to json
@@ -22,27 +22,42 @@ def url_tail(F):
 
 
 @app.route("/")
-def base_template():
-    if 'username' in session:
-        return redirect("/menu.html", code=302)
-    else:
-        return redirect("/login.html", code=302)
+def root():
+    if 'Username' not in session:
+        return redirect("/login.html")
+    return redirect("/index.html")
+
+@app.route("/index.html")
+def main_menu():
+    if 'Username' not in session:
+        return redirect("/login.html")
+    print(session.get('UserInfo'))
+    return render_template("index.html", **extract(session, 'Username', 'UserInfo'))
 
 @app.route("/login.html", methods=['GET', 'POST'])
 def login_page():
     if request.method == "POST":
         F = extract(request.form)
-        # TODO Check basic validity of username and password e.g. 0 < len < 50
+        if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
+            print("Invalid username or password")
         url = server + '/login?' + url_tail(F)
         r = requests.get(url)
         t = json.loads(r.content)
-        return t['status']
+        if t['status'] == "success":
+            session['Username'] = F['username']
+            print(t)#.get('userinfo', "Info"))
+            session['UserInfo'] = t.get('userinfo', "User Info")
+            return redirect('index.html')
+        else:
+            return "Login failed"
     else:
         return render_template("login2.html")
 
-@app.route("/logout", methods=['GET', 'POST'])
+@app.route('/logout')
 def logout():
-    return "Test"
+    # remove the username from the session if it's there
+    session.pop('Username', None)
+    return redirect('/login.html')
 
 if __name__ == "__main__":
     app.run(debug=True, port=5555)
