@@ -152,16 +152,17 @@ def addIncident():
     longitude = req_data['longitude']
     username = req_data['username']
     cursor = db.cursor()
-    sql = "INSERT INTO Incidents (Abbreviation, Date, Description, Latitude, Longitude, Username) VALUES (%s, %s, %s, %d, %d, %s)"
+    sql = "INSERT INTO Incidents (Abbreviation, Date, Description, Latitude, Longitude, Username) VALUES (%s, %s, %s, %s, %s, %s)"
     try:
         # Execute the SQL command
         cursor.execute(sql, (abbrv, date, desc, latitude, longitude, username))
         # Commit your changes in the database
         db.commit()
         return 'success'
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return 'failed'
 
 @app.route("/addResource", methods=['POST'])
@@ -181,24 +182,25 @@ def addResource():
     capabilities = req_data['capabilities']
     cursor = db.cursor()
     sql = "INSERT INTO Resources (Name, Latitude, Longitude, Model, MaxDistance, PrimaryESFNumber, Cost, UnitName, Username) \
-    VALUES (%s, %d, %d, %s, %d, %d, %d, %s, %s)"
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     try:
         # print(sql)
         # Execute the SQL command
         cursor.execute(sql, (name, lat, longi, model, maxDis, primEsf, cost, unitName, username))
         resourceId = cursor.lastrowid
         for esf in additionalEsf:
-            sql = "INSERT INTO AdditionalESF VALUES (%d, %d)"
+            sql = "INSERT INTO AdditionalESF VALUES (%s, %s)"
             cursor.execute(sql, (resourceId, esf))
         for cap in capabilities:
-            sql = "INSERT INTO Capabilities VALUES (%d, %s)"
+            sql = "INSERT INTO Capabilities VALUES (%s, %s)"
             cursor.execute(sql, (resourceId, cap))
         # Commit your changes in the database
         db.commit()
         return 'success'
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return 'failed'
 
 @app.route("/getIncidentsForUser")
