@@ -3,7 +3,7 @@ import pymysql
 import copy
 
 app = Flask(__name__)
-db = pymysql.connect(host='localhost',port=3306, user='root',passwd='root',db='cs6400_summer18_team010', unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock' )
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
  
 @app.route("/")
 def index():
@@ -226,6 +226,12 @@ def getIncidentsForUser():
         return json.dumps(result)
     except:
         print ("Error: unable to fetch data")
+
+from flask import render_template
+
+@app.route("/login.html")
+def login_page():
+    return render_template("login2.html")
 
 if __name__ == "__main__":
         app.run()
