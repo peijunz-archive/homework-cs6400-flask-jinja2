@@ -9,10 +9,8 @@ db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",un
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
 
-@app.route("/login", methods = ['POST','GET'])
+@app.route("/login")
 def login():
-        return render_template('login.html')
-
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
