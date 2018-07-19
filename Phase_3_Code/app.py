@@ -3,7 +3,7 @@ import pymysql
 import copy
 
 app = Flask(__name__)
-db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock')
  
 @app.route("/")
 def index():
