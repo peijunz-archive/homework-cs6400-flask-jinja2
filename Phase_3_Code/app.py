@@ -1,4 +1,4 @@
-from flask import Flask,request,jsonify,json
+from flask import Flask,request,jsonify,json,render_template
 import pymysql
 import copy
 
@@ -9,8 +9,10 @@ db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
 
-@app.route("/login")
+@app.route("/login", methods = ['POST','GET'])
 def login():
+        return render_template('login.html')
+
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
@@ -234,4 +236,4 @@ def login_page():
     return render_template("login2.html")
 
 if __name__ == "__main__":
-        app.run()
+        app.run(debug = True)
