@@ -14,20 +14,20 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
-        sql = "SELECT * from user where Username='" + username + "' and Password='" + password + "'"
+        sql = "SELECT * from `User` where Username='" + username + "' and Password='" + password + "'"
         result={}
-        try:
-            # Execute the SQL command
-            cursor.execute(sql)
-            # Fetch all the rows in a list of lists.
-            data = cursor.fetchone()
-            if data is None:
-                result['status']='failed'
-            else:
-                result['status']='success'
-            return json.dumps(result)
-        except:
-            print ("Error: unable to fetch data")
+        #try:
+        # Execute the SQL command
+        cursor.execute(sql)
+        # Fetch all the rows in a list of lists.
+        data = cursor.fetchone()
+        if data is None:
+            result['status']='failed'
+        else:
+            result['status']='success'
+        return json.dumps(result)
+        #except:
+            #print ("Error: unable to fetch data")
 
         # disconnect from server
         # db.close()
@@ -228,4 +228,4 @@ def getIncidentsForUser():
         print ("Error: unable to fetch data")
 
 if __name__ == "__main__":
-        app.run(debug = True)
+    app.run(debug = True, port=5000)
