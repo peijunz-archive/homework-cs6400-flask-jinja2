@@ -40,16 +40,16 @@ def login():
 def mainMenu():
     username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Username, Category, null, null, null, null, null FROM Municipalities WHERE Username = '"+ username + "' UNION \
-            SELECT Username, null, Location, NumberofEmployees, null, null, null FROM Companies WHERE Username = '" + username+"' \
+    sql = "SELECT Username, Category, null, null, null, null, null FROM Municipalities WHERE Username = %s UNION \
+            SELECT Username, null, Location, NumberofEmployees, null, null, null FROM Companies WHERE Username = %s \
             UNION \
-            SELECT Username, null, null, null, AgencyNameLocalOffice, null, null FROM GovAgencies WHERE Username = '" + username +"' \
+            SELECT Username, null, null, null, AgencyNameLocalOffice, null, null FROM GovAgencies WHERE Username = %s \
             UNION \
-            SELECT Username, null, null, null, null, JobTitle, DateHired FROM Individuals WHERE Username = '" + username + "'"
+            SELECT Username, null, null, null, null, JobTitle, DateHired FROM Individuals WHERE Username = %s"
     result={}
     try:
         # Execute the SQL command
-        cursor.execute(sql)
+        cursor.execute(sql, (username, username, username, username))
         # Fetch all the rows in a list of lists.
         data = cursor.fetchone()
     except:
@@ -152,12 +152,10 @@ def addIncident():
     longitude = req_data['longitude']
     username = req_data['username']
     cursor = db.cursor()
-    sql = "INSERT INTO Incidents (Abbreviation, Date, Description, Latitude, Longitude, Username) VALUES ('%s', '%s', '%s', %d, %d, '%s')" % \
-    (abbrv, date, desc, latitude, longitude, username)
-    print(sql)
+    sql = "INSERT INTO Incidents (Abbreviation, Date, Description, Latitude, Longitude, Username) VALUES (%s, %s, %s, %d, %d, %s)"
     try:
         # Execute the SQL command
-        cursor.execute(sql)
+        cursor.execute(sql, (abbrv, date, desc, latitude, longitude, username))
         # Commit your changes in the database
         db.commit()
         return 'success'
@@ -183,19 +181,18 @@ def addResource():
     capabilities = req_data['capabilities']
     cursor = db.cursor()
     sql = "INSERT INTO Resources (Name, Latitude, Longitude, Model, MaxDistance, PrimaryESFNumber, Cost, UnitName, Username) \
-    VALUES ('%s', %d, %d, '%s', %d, %d, %d, '%s', '%s')" % \
-    (name, lat, longi, model, maxDis, primEsf, cost, unitName, username)
+    VALUES (%s, %d, %d, %s, %d, %d, %d, %s, %s)"
     try:
-        print(sql)
+        # print(sql)
         # Execute the SQL command
-        cursor.execute(sql)
+        cursor.execute(sql, (name, lat, longi, model, maxDis, primEsf, cost, unitName, username))
         resourceId = cursor.lastrowid
         for esf in additionalEsf:
-            sql = "INSERT INTO AdditionalESF VALUES (%d, %d)" % (resourceId, esf)
-            cursor.execute(sql)
+            sql = "INSERT INTO AdditionalESF VALUES (%d, %d)"
+            cursor.execute(sql, (resourceId, esf))
         for cap in capabilities:
-            sql = "INSERT INTO Capabilities VALUES (%d, '%s')" % (resourceId, cap)
-            cursor.execute(sql)
+            sql = "INSERT INTO Capabilities VALUES (%d, %s)"
+            cursor.execute(sql, (resourceId, cap))
         # Commit your changes in the database
         db.commit()
         return 'success'
@@ -208,11 +205,11 @@ def addResource():
 def getIncidentsForUser():
     username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Abbreviation, Number, Description, Date, Longitude, Latitude FROM Incidents WHERE Username = '%s'" % username
+    sql = "SELECT Abbreviation, Number, Description, Date, Longitude, Latitude FROM Incidents WHERE Username = %s"
     result=[]
     try:
         # Execute the SQL command
-        cursor.execute(sql)
+        cursor.execute(sql, (username))
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
         if data is None:
