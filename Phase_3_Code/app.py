@@ -269,7 +269,7 @@ def searchResults():
         
     result = []
     try:
-        print(sql)
+        #print(sql)
         # Execute the SQL command
         cursor.execute(sql, tuple(para))
         data = cursor.fetchall()
@@ -289,7 +289,7 @@ def searchResults():
                 result.append(copy.copy(rsc))
         return json.dumps(result)    
     except:
-        print ("Error: unable to fetch data")
+        return "Error: unable to fetch data"
        
 @app.route("/requestResource", methods=['POST'])
 def requestResource():
@@ -303,7 +303,7 @@ def requestResource():
     cursor = db.cursor
     sql = "INSERT INTO `Requests` VALUES (%d, %s, %d, %s, %s)"
     try:
-        print(sql)
+        #print(sql)
         # Execute the SQL command
         cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
         # Commit your changes in the database
@@ -326,10 +326,10 @@ def deployResource():
     sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
     try:
-        print(sql_add)
+        #print(sql_add)
         # Execute the SQL command
         cursor.execute(sql_add, (rscID, abbrv, number, startDate, returnDate))
-        print(sql_del)
+        #print(sql_del)
         # Execute the SQL command
         cursor.execute(sql_del, (rscID, abbrv, number))
         # Commit your changes in the database
