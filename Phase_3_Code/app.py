@@ -229,11 +229,5 @@ def getIncidentsForUser():
     except:
         print ("Error: unable to fetch data")
 
-from flask import render_template
-
-@app.route("/login.html")
-def login_page():
-    return render_template("login2.html")
-
 if __name__ == "__main__":
         app.run(debug = True)
