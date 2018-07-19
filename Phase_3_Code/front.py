@@ -19,19 +19,33 @@ def extract(form, *keys):
 
 @app.route("/")
 def root():
-    if 'Username' not in session:
+    if 'username' not in session:
         return redirect("/login.html")
-    return redirect("/index.html")
+    return redirect("/menu.html")
 
-@app.route("/index.html")
+types = {'Municipalities': 'Category',
+         'GovAgencies': 'AgencyNameLocalOffice',
+         'Companies':['Location','NumberofEmployees'],
+         'Individuals': 'JobTitle'}
+
+@app.route("/menu.html")
 def main_menu():
-    if 'Username' not in session:
+    print(">>> Entering main menu", session)
+    if 'username' not in session:
         return redirect("/login.html")
-    print(session.get('UserInfo'))
-    return render_template("index.html", **extract(session, 'Username', 'UserInfo'))
+    if 'userinfo' not in session:
+        url = server + '/mainMenu?' + urlencode(extract(session, 'username'))
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request conetent", r.content)
+        t = json.loads(r.content)
+        session['userinfo'] = t
+    print("userinfo: ", session.get('userinfo'))
+    return render_template("menu.html", **extract(session, 'username', 'userinfo'))
 
 @app.route("/login.html", methods=['GET', 'POST'])
 def login_page():
+    print(">>> Entering login page", session)
     if request.method == "POST":
         F = extract(request.form)
         if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
@@ -41,10 +55,9 @@ def login_page():
         r = requests.get(url)
         t = json.loads(r.content)
         if t['status'] == "success":
-            session['Username'] = F['username']
-            print(t)#.get('userinfo', "Info"))
-            session['UserInfo'] = t.get('userinfo', "User Info")
-            return redirect('index.html')
+            session['username'] = F['username']
+            print(session)
+            return redirect('menu.html')
         else:
             return "Login failed"
     else:
@@ -52,8 +65,8 @@ def login_page():
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
-    session.pop('Username', None)
+    print(">>> Entering logout", session)
+    session.clear()
     return redirect('/login.html')
 
 if __name__ == "__main__":

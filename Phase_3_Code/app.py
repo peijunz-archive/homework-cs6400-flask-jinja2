@@ -52,28 +52,28 @@ def mainMenu():
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchone()
-        if data is None:
-            result['status']='No user found.'
-        else:
-            result['Username'] = data[0]
-            result['Category'] = data[1]
-            result['Location'] = data[2]
-            result['NumberofEmployees'] = data[3]
-            result['AgencyNameLocationOffice'] = data[4]
-            result['JobTitle'] = data[5]
-            result['DateHired'] = data[6]
-            if result['Category'] is not None:
-                result['Type'] = 'Municipality'
-            elif result['Location'] is not None:
-                result['Type'] = 'Company'
-            elif result['AgencyNameLocationOffice'] is not None:
-                result['Type'] = 'GovAgency'
-            else:
-                result['Type'] = 'Individual'
-
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status']='No user found.'
+    else:
+        #result['Username'] = data[0]
+        result['Category'] = data[1]
+        result['Location'] = data[2]
+        result['NumberofEmployees'] = data[3]
+        result['AgencyNameLocalOffice'] = data[4]
+        result['JobTitle'] = data[5]
+        result['DateHired'] = data[6]
+        if result['Category'] is not None:
+            result['Type'] = 'Municipality'
+        elif result['Location'] is not None:
+            result['Type'] = 'Company'
+        elif result['AgencyNameLocalOffice'] is not None:
+            result['Type'] = 'GovAgency'
+        else:
+            result['Type'] = 'Individual'
+    result = dict((k, v) for k, v in result.items() if v)
+    return json.dumps(result)
 
 @app.route("/getESF")
 def getESF():
