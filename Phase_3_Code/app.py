@@ -290,7 +290,8 @@ def searchResults():
         return json.dumps(result)    
     except:
         print ("Error: unable to fetch data")
-        
+       
+@app.route("/requestResource", methods=['POST'])
 def requestResource():
     req_data = request.get_json()
     print(req_data)
@@ -313,6 +314,7 @@ def requestResource():
         db.rollback()
         return 'failed'
 
+@app.route("/deployResource", methods = ['POST', 'DELETE'])
 def deployResource():
     req_data = request.get_json()
     print(req_data)
