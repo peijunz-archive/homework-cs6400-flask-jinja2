@@ -1,5 +1,6 @@
 from flask import Flask,request,jsonify,json,render_template,redirect,session
 import requests
+from urllib.parse import urlencode
 
 app = Flask(__name__)
 app.secret_key = '_5#y2L"F4Q8dATabASe64OOtEaMOi0]/'
@@ -15,11 +16,6 @@ def extract(form, *keys):
     return F
 
 # json.dump is able to convert dict F to json
-
-def url_tail(F):
-    '''Convert form dict F to url ending string'''
-    return '&'.join(["{}={}".format(k, v) for k, v in F.items()])
-
 
 @app.route("/")
 def root():
@@ -40,7 +36,8 @@ def login_page():
         F = extract(request.form)
         if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
             print("Invalid username or password")
-        url = server + '/login?' + url_tail(F)
+        url = server + '/login?' + urlencode(F)
+        print("Sending", url)
         r = requests.get(url)
         t = json.loads(r.content)
         if t['status'] == "success":

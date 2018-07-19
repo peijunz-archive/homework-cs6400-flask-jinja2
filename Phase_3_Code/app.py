@@ -14,13 +14,17 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
-        sql = "SELECT * from `User` where Username='" + username + "' and Password='" + password + "'"
+        sql = "SELECT * from `User` where Username=%s and Password=%s"
+        try:
+            #Execute the SQL command
+            print(sql%(username, password))
+            cursor.execute(sql, (username, password))
+            # Fetch all the rows in a list of lists.
+            data = cursor.fetchone()
+        except pymysql.err.ProgrammingError:
+            print("SQL error")
+            data = None
         result={}
-        #try:
-        # Execute the SQL command
-        cursor.execute(sql)
-        # Fetch all the rows in a list of lists.
-        data = cursor.fetchone()
         if data is None:
             result['status']='failed'
         else:
