@@ -43,6 +43,13 @@ def main_menu():
     print("userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'username', 'userinfo'))
 
+@app.route("/add-resource.html")
+def add_resource():
+    print(">>> Entering Add resource", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    return render_template("add-resource.html", **extract(session, 'username', 'userinfo'))
+
 @app.route("/login.html", methods=['GET', 'POST'])
 def login_page():
     print(">>> Entering login page", session)

@@ -11,12 +11,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
-<!--     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
   </head>
   <body>
+    <!--     navigation bar -->
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -42,7 +42,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><span class="fa fa-user"></span> {{ username }} </a></li>
-          {% if userinfo.Type %}
+          {% if userinfo and userinfo.Type %}
             {% if userinfo.JobTitle %}
                 <li><a href="#"><span class="fa fa-briefcase"></span> {{ userinfo.JobTitle }} </a></li>
             {% elif userinfo.Category %}
