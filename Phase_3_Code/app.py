@@ -90,7 +90,7 @@ def getESF():
         else:
             esf={}
             for row in data:
-                esf['Name'] = row[0]
+                esf['Number'] = row[0]
                 esf['Description'] = row[1]
                 result.append(copy.copy(esf))
         return json.dumps(result)
@@ -218,7 +218,7 @@ def getIncidentsForUser():
             incident={}
             for row in data:
                 incident['Abbreviation'] = row[0]
-                incident['Name'] = row[1]
+                incident['Number'] = row[1]
                 incident['Description'] = row[2]
                 incident['Date'] = row[3]
                 incident['Longitude'] = row[4]
@@ -227,6 +227,117 @@ def getIncidentsForUser():
         return json.dumps(result)
     except:
         return "Error: unable to fetch data"
+    
+@app.route("/searchResults")
+def searchResults():
+    req_data = request.get_json()
+    print(req_data)
+    keyword = req_data['keyword']
+    ESFNumber = req_data['ESFNumber']
+    radius = req_data['radius']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    cursor = db.cursor()  
+    
+    if keyword==None:
+        keyword = ''
+    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate", 
+              "FROM Resources r", 
+              "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID
+              WHERE r.Name like %%%s%%"]
+    if ESFNumber!=None:
+        pieces.append("AND (r.PrimaryESFNumber = %d \
+        OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
+    if abbrvNone!=None and number!=None and radius!=None:
+        pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
+         * COS(RADIANS(ic.Latitude)) \
+         * COS(RADIANS(r.Longitude - ic.Longitude)) \
+         + SIN(RADIANS(r.Latitude)) \
+         * SIN(RADIANS(ic.Latitude))) AS proximity")
+        pieces.insert(3, ",Incident ic")
+        pieces.append("AND ic.Abbreviation = %s \
+        AND ic.Number = %d \
+        AND proximity < %f \
+        ORDER BY proximity")
+    sql = ''.join((string for string in pieces))
+    
+    para=[keyword]
+    if ESFNumber!=None:
+        para += [ESFNumber, ESFNumber]
+    if abbrvNone!=None and number!=None and radius!=None:
+        para += [abbrv, number, radius]
+        
+    result = []
+    try:
+        print(sql)
+        # Execute the SQL command
+        cursor.execute(sql, tuple(para))
+        data = cursor.fetchall()
+        if data is None:
+            result.append({'status': 'No Resources Found.'})
+        else:
+            rsc={}
+            for row in data:
+                rsc['Name'] = row[0]
+                rsc['Cost'] = row[1]
+                rsc['UnitName'] = row[2]
+                rsc['Username'] = row[3]
+                rsc['ReturnDate'] = row[4]
+                if abbrvNone!=None and number!=None and radius!=None:
+                    rsc['proximity'] = row[5]
+                else rsc['proximity'] = None
+                result.append(copy.copy(rsc))
+        return json.dumps(result)    
+    except:
+        print ("Error: unable to fetch data")
+        
+def requestResource():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['ResourceID']
+    abbrv = req_data['Abbreviation']
+    number = req_data['Number']
+    requestDate = req_data['requestDate']
+    returnDate = req_data['returnDate']
+    cursor = db.cursor
+    sql = "INSERT INTO `Requests` VALUES (%d, %s, %d, %s, %s)"
+    try:
+        print(sql)
+        # Execute the SQL command
+        cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
+        # Commit your changes in the database
+        db.commit()
+        return 'success'
+    except:
+        # Rollback in case there is any error
+        db.rollback()
+        return 'failed'
+
+def deployResource():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['ResourceID']
+    abbrv = req_data['Abbreviation']
+    number = req_data['Number']
+    startDate =req_data['StartDate']
+    returnDate = req_data['ReturnDate']
+    sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
+    sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
+    try:
+        print(sql_add)
+        # Execute the SQL command
+        cursor.execute(sql_add, (rscID, abbrv, number, startDate, returnDate))
+        print(sql_del)
+        # Execute the SQL command
+        cursor.execute(sql_del, (rscID, abbrv, number))
+        # Commit your changes in the database
+        db.commit()
+        return 'success'
+    except:
+        # Rollback in case there is any error
+        db.rollback()
+        return 'failed' 
+
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
