@@ -103,7 +103,6 @@ def add_resource_do():
     else:
         return 'backend fails'
 
-
 @app.route("/add-incident.do", methods=['POST'])
 def add_incident_do():
     print(">>> Entering Add incident do", session)
@@ -131,26 +130,14 @@ def add_incident_do():
     r = requests.post(url, json=F)
     print("Request content", r.content)
     t = json.loads(r.content)
-    #session.pop('IncidentId', None)
+    session.pop('incidents', None)
     if t['status'] == 'success':
         '''Do something'''
         return redirect("/add-incident.html?status=success")
     else:
         return 'backend fails'
 
-
-@app.route("/add-resource.html")
-def add_resource():
-    print(">>> Entering Add resource", session)
-    if 'username' not in session:
-        return redirect("/login.html")
-    if 'TimeUnit' not in session:
-        url = server + '/getTimeUnit'
-        print("Sending", url)
-        r = requests.get(url)
-        print("Request content", r.content)
-        t = json.loads(r.content)
-        session['TimeUnit'] = t['TimeUnit']
+def getESF():
     if 'ESF' not in session:
         url = server + '/getESF'
         print("Sending", url)
@@ -158,23 +145,58 @@ def add_resource():
         print("Request content", r.content)
         t = json.loads(r.content)
         session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
-    # Get resource ID
-    D = {}
+
+def getTimeUnit():
+    if 'TimeUnit' not in session:
+        url = server + '/getTimeUnit'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['TimeUnit'] = t['TimeUnit']
+
+def getIncidents():
+    if 'TimeUnit' not in session:
+        url = server + '/getIncidentsForUser?'+urlencode({"username": session['username']})
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['incidents'] = t
+
+def getNextResourceID():
     url = server + '/getNextResourceId'
     print("Sending", url)
     r = requests.get(url)
     print("Request content", r.content)
     t = json.loads(r.content)
     session['nextResourceId'] = t['nextResourceId']
+
+@app.route("/add-resource.html")
+def add_resource():
+    print(">>> Entering Add resource", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    getTimeUnit()
+    getESF()
+    getNextResourceID()
     return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
 
 @app.route("/search.html")
 def search():
     print(">>> Entering search", session)
     if 'username' not in session:
-    # TODO
         return redirect("/login.html")
-    return render_template("search.html", **extract(session, 'username', 'userinfo'))
+    getESF()
+    getIncidents()
+    return render_template("search.html", **extract(session, 'username', 'userinfo', 'ESF', 'incidents'))
+
+@app.route("/results.html", methods=['POST'])
+def results():
+    print(">>> Entering results", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    return render_template("results.html", **extract(session, 'username', 'userinfo'))
 
 @app.route("/add-incident.html")
 def add_incident():
