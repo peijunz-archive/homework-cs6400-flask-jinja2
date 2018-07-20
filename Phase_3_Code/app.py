@@ -1,6 +1,7 @@
 from flask import Flask,request,jsonify,json,render_template
 import pymysql
 import copy
+import datetime
 
 app = Flask(__name__)
 db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
@@ -330,15 +331,17 @@ def deployResource():
     rscID = req_data['resourceID']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    startDate =req_data['startDate']
-    returnDate = req_data['returnDate']
+    now = datetime.datetime.now()
+    startDate = '/'.join((now.month, now.day, now.year))
     cursor = db.cursor
-    sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
+    sql_add = "INSERT INTO InUse VALUES \
+    (SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Request \
+    WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
     try:
         #print(sql_add)
         # Execute the SQL command
-        cursor.execute(sql_add, (rscID, abbrv, number, startDate, returnDate))
+        cursor.execute(sql_add, (startDate, rscID, abbrv, number))
         #print(sql_del)
         # Execute the SQL command
         cursor.execute(sql_del, (rscID, abbrv, number))
@@ -411,7 +414,7 @@ def findMyRequests():
 def findReceivedRequests():
     username = request.args.get('username')
     cursor = db.cursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
+    sql = "SELECT Resource.ID, Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
