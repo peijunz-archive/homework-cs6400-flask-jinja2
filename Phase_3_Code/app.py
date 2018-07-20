@@ -120,23 +120,20 @@ def getTimeUnit():
 def getDeclarations():
     cursor = db.cursor()
     sql = "SELECT Abbreviation, Name FROM Declarations"
-    result=[]
+    result={}
     try:
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Declarations Found.'})
-        else:
-            dc={}
-            for row in data:
-                dc['Abbreviation'] = row[0]
-                dc['Name'] = row[1]
-                result.append(copy.copy(dc))
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No Declarations Found.'
+    else:
+        print(data)
+        result['Declarations'] = data
+    return json.dumps(result)
 
 @app.route("/addIncident", methods=['POST'])
 def addIncident():

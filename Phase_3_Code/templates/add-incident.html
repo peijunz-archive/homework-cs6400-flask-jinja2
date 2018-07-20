@@ -1,1 +1,51 @@
 {% extends "base.html" %}
+{% block title %}Add New Incident{% endblock %}
+
+{% block content %}
+<div class="card add-card">
+    <div class="card-header">
+        <h3 class="panel-title">New Incident Information</h3>
+    </div>
+    <div class="card-body">
+        <form action="add-incident.do" class="form" method="post">
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Declaration</label>
+                <select name="declaration" class="form-control col-sm-9" required>
+                    {% for item in declarations %}
+                    <option>{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Incident ID</label>
+                <div class="col-sm-9 info-col">(Assigned Automatically)</div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Description</label>
+                <input name="description" type="text" class="form-control col-sm-9" required>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Date</label>
+                <input name="date" type="date" class="form-control col-sm-9" min='1990-01-01' required>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Home Location</label>
+                <div class="input-group col-sm-4">
+                    <div class="input-group-prepend"><span class="input-group-text">Latitude</span></div>
+                    <input name="latitude" type="number" class="form-control" min="-90" max="90" step="any" required>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="input-group col-sm-4">
+                    <div class="input-group-prepend"><span class="input-group-text">Longitude</span></div>
+                    <input name="longitude" type="number" class="form-control" min="-180" max="180" step="any" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-9">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

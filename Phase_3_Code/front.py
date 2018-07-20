@@ -104,6 +104,41 @@ def add_resource_do():
         return 'backend fails'
 
 
+@app.route("/add-incident.do", methods=['POST'])
+def add_incident_do():
+    print(">>> Entering Add incident do", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    #if 'incidentID' not in session:
+    #    return "Incident ID is already processed or expired!"
+    F = extract(request.form)
+    print("Original form", request.form)
+    if not F.get('declaration', '') or len(F['declaration'])>50:
+        return 'Error in declaration'
+    for abbr, decl in session['Declarations']:
+        if decl == F['declaration']:
+            F['abbreviation'] = abbr
+            del F['declaration']
+            break
+    for k in ['latitude', 'longitude']:
+        try:
+            v = literal_eval(F.get(k, ''))
+            F[k] = v
+        except ValueError:
+            return "Error in key {}".format(k)
+    F['username'] = session['username']
+    url = server+'/addIncident'
+    r = requests.post(url, json=F)
+    print("Request content", r.content)
+    t = json.loads(r.content)
+    #session.pop('IncidentId', None)
+    if t['status'] == 'success':
+        '''Do something'''
+        return redirect("/add-incident.html?status=success")
+    else:
+        return 'backend fails'
+
+
 @app.route("/add-resource.html")
 def add_resource():
     print(">>> Entering Add resource", session)
@@ -146,8 +181,16 @@ def add_incident():
     print(">>> Entering Add incident", session)
     if 'username' not in session:
         return redirect("/login.html")
-    # TODO
-    return render_template("add-incident.html", **extract(session, 'username', 'userinfo'))
+    if 'Declarations' not in session:
+        url = server + '/getDeclarations'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['Declarations'] = t['Declarations']
+    # Get resource ID
+    Decl = [i[1] for i in session['Declarations']]
+    return render_template("add-incident.html", declarations=Decl, **extract(session, 'username', 'userinfo'))
 
 @app.route("/report.html")
 def report():
