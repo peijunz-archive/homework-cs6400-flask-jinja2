@@ -165,6 +165,26 @@ def addIncident():
         print(ex)
         return 'failed'
 
+@app.route("/getNextResourceId")
+def getNextResourceId():
+    cursor = db.cursor()
+    sql = "SHOW TABLE STATUS LIKE 'Resources'"
+    result={}
+    try:
+        # Execute the SQL command
+        cursor.execute(sql)
+        # Fetch all the rows in a list of lists.
+        data = cursor.fetchone()
+        if data is None:
+            result['status']= 'No Id Found.'
+        else:
+            print(data)
+            result['nextResourceId'] = data[10]
+        return json.dumps(result)
+    except Exception as ex:
+        print(ex)
+        return "Error: unable to fetch data"
+
 @app.route("/addResource", methods=['POST'])
 def addResource():
     req_data = request.get_json()
