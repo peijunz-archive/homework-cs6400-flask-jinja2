@@ -78,45 +78,42 @@ def mainMenu():
 @app.route("/getESF")
 def getESF():
     cursor = db.cursor()
-    sql = "SELECT Number, Description FROM ESF"
-    result=[]
+    sql = "SELECT Number, Description FROM ESF ORDER BY Number ASC"
+    result={}
     try:
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No ESF Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                result.append(copy.copy(esf))
-        return json.dumps(result)
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No ESF Found.'
+    else:
+        print(data)
+        result['ESF'] = data
+    return json.dumps(result)
 
 @app.route("/getTimeUnit")
 def getTimeUnit():
     cursor = db.cursor()
-    sql = "SELECT Name FROM TimeUnit"
-    result=[]
+    sql = "SELECT Name FROM TimeUnit;"
+    result={}
     try:
+        print(sql)
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Time Unit Found.'})
-        else:
-            tu={}
-            for row in data:
-                tu['Name'] = row[0]
-                result.append(copy.copy(tu))
-        return json.dumps(result)
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No Time Unit Found.'
+    else:
+        tu={}
+        result['TimeUnit'] = [row[0] for row in data]
+    print(result)
+    return json.dumps(result)
 
 
 @app.route("/getDeclarations")

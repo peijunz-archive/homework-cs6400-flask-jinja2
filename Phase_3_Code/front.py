@@ -48,8 +48,21 @@ def add_resource():
     print(">>> Entering Add resource", session)
     if 'username' not in session:
         return redirect("/login.html")
-    # TODO
-    return render_template("add-resource.html", **extract(session, 'username', 'userinfo'))
+    if 'TimeUnit' not in session:
+        url = server + '/getTimeUnit'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request conetent", r.content)
+        t = json.loads(r.content)
+        session['TimeUnit'] = t['TimeUnit']
+    if 'ESF' not in session:
+        url = server + '/getESF'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request conetent", r.content)
+        t = json.loads(r.content)
+        session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
+    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF'))
 
 @app.route("/search.html")
 def search():
@@ -101,7 +114,7 @@ def login_page():
         else:
             return "Login failed"
     else:
-        return render_template("login2.html")
+        return render_template("login.html")
 
 @app.route('/logout')
 def logout():
