@@ -15,7 +15,7 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
-        sql = "SELECT * from `User` where Username=%s and Password=%s"
+        sql = "SELECT Name from `User` where Username=%s and Password=%s"
         try:
             #Execute the SQL command
             print(sql%(username, password))
@@ -25,7 +25,8 @@ def login():
         except pymysql.err.ProgrammingError:
             print ("Error: unable to fetch data")
             return json.dumps({'status': 'failed'})
-        return json.dumps({'status': 'success'})
+        print(data)
+        return json.dumps({'status': 'success', 'name':data[0]})
 
         # disconnect from server
         # db.close()
@@ -283,6 +284,7 @@ def searchResults():
         cursor.execute(sql, tuple(para))
         data = cursor.fetchall()
     except:
+        print('Search Error')
         return "Error: unable to fetch data"
     if data is not None:
         for row in data:

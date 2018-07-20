@@ -69,7 +69,7 @@ def getTimeUnit():
         session['TimeUnit'] = t['TimeUnit']
 
 def getIncidents():
-    if 'TimeUnit' not in session:
+    if 'incidents' not in session:
         url = server + '/getIncidentsForUser?'+urlencode({"username": session['username']})
         print("Sending", url)
         r = requests.get(url)
@@ -99,6 +99,7 @@ def login():
         t = json.loads(r.content)
         if t['status'] == "success":
             session['username'] = F['username']
+            session['name'] = t['name']
             print(session)
             return redirect('menu.html')
         else:
@@ -131,7 +132,7 @@ def main_menu():
         t = json.loads(r.content)
         session['userinfo'] = t
     print("userinfo: ", session.get('userinfo'))
-    return render_template("menu.html", **extract(session, 'username', 'userinfo'))
+    return render_template("menu.html", **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/add-resource.html")
 def add_resource():
@@ -141,7 +142,7 @@ def add_resource():
     getTimeUnit()
     getESF()
     getNextResourceID()
-    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
+    return render_template("add-resource.html", **extract(session, 'name', 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
 
 @app.route("/add-resource.do", methods=['POST'])
 def add_resource_do():
@@ -197,7 +198,7 @@ def add_incident():
         session['Declarations'] = t['Declarations']
     # Get resource ID
     Decl = [i[1] for i in session['Declarations']]
-    return render_template("add-incident.html", declarations=Decl, **extract(session, 'username', 'userinfo'))
+    return render_template("add-incident.html", declarations=Decl, **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/add-incident.do", methods=['POST'])
 def add_incident_do():
@@ -240,7 +241,7 @@ def search():
         return redirect("/login.html")
     getESF()
     getIncidents()
-    return render_template("search.html", **extract(session, 'username', 'userinfo', 'ESF', 'incidents'))
+    return render_template("search.html", **extract(session, 'name', 'username', 'userinfo', 'ESF', 'incidents'))
 
 @app.route("/results.html", methods=['POST'])
 def results():
@@ -258,8 +259,8 @@ def results():
     print('Result content', r.content)
     result = json.load(r.content)
     return render_template("results.html",
-                           **result()
-                           **extract(session, 'username', 'userinfo'))
+                           **result,
+                           **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/status.html")
 def status():
@@ -267,7 +268,7 @@ def status():
     if 'username' not in session:
         return redirect("/login.html")
     # TODO
-    return render_template("status.html", **extract(session, 'username', 'userinfo'))
+    return render_template("status.html", **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/report.html")
 def report():
@@ -275,7 +276,7 @@ def report():
     if 'username' not in session:
         return redirect("/login.html")
     # TODO
-    return render_template("report.html", **extract(session, 'username', 'userinfo'))
+    return render_template("report.html", **extract(session, 'name', 'username', 'userinfo'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5555)
