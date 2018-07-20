@@ -413,6 +413,33 @@ def findMyRequests():
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
+@app.route("findReceivedRequests")
+def findReceivedRequests():
+    usernam = request.args.get('username')
+    cursor = db.s\ursor
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    FROM Requests \ 
+    INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
+    INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    WHERE Resources.Username = %s"
+    try: 
+        cursor.execute(sql, (username))
+        data = cursor.fetchall()
+    except:
+        return "Error: unable to fetch data"
+    result = []
+    if data is None:
+        result.append({'status': 'No Resources Found.'})
+    else:
+        rsc={}
+        for row in data:
+            rsc['RscName'] = row[0]
+            rsc['IncDes'] = row[1]
+            rsc['RscUsername'] = row[2]
+            rsc['ReturnDate'] = row[3]
+            result.append(copy.copy(rsc))
+    return json.dumps(result)
+
 
 ##################Resource Report########################
 @app.route("/totalResource")
