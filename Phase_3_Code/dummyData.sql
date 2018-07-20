@@ -1,10 +1,10 @@
-INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('muni', 'muni', 'muni');
-INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('comp', 'comp', 'comp');
 INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('gov', 'gov', 'gov');
-INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('ind', 'ind', 'ind');
 INSERT INTO `cs6400_summer18_team010`.`GovAgencies` (`Username`, `AgencyNameLocalOffice`) VALUES ('gov', 'agencyName');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('ind', 'ind', 'ind');
 INSERT INTO `cs6400_summer18_team010`.`Individuals` (`Username`, `JobTitle`, `DateHired`) VALUES ('ind', 'jobTitle', '2018/7/18');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('comp', 'comp', 'comp');
 INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('comp', 'location', '100');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('muni', 'muni', 'muni');
 INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('muni', 'category');
 INSERT INTO `cs6400_summer18_team010`.`ESF` (`Number`, `Description`) VALUES ('1', 'Transportation');
 INSERT INTO `cs6400_summer18_team010`.`ESF` (`Number`, `Description`) VALUES ('2', 'Communications');
@@ -29,3 +29,32 @@ INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VA
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('FM', 'Fire Management Assistance');
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('FS', 'Fire Suppression Authorization');
 
+-- 07/19 update
+INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Each');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fire', 'Fire & Rescue', 'Fire');
+INSERT INTO `cs6400_summer18_team010`.`GovAgencies` (`Username`, `AgencyNameLocalOffice`) VALUES ('fire', 'Burlington Vermont Fire & Rescue');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fema', 'FEMA', 'FEMA');
+INSERT INTO `cs6400_summer18_team010`.`GovAgencies` (`Username`, `AgencyNameLocalOffice`) VALUES ('fema', 'FEMA – New Orleans');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fbi', 'FBI', 'FBI');
+INSERT INTO `cs6400_summer18_team010`.`GovAgencies` (`Username`, `AgencyNameLocalOffice`) VALUES ('fbi', 'FBI – Atlanta
+Office');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('google', 'Google ', 'Google');
+INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('google', 'Mountain View, CA', '80000');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('apple', 'Apple', 'Apple');
+INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('apple', 'Cupertino, CA', '100000');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('amazon', 'Amazon', 'Amazon');
+INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('amazon', 'Seattle, WA', '230000');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('atlanta', 'City of Atlanta', 'Atlanta');
+INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('atlanta', 'City');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fulton', 'County of Fulton', 'Fulton');
+INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('fulton', 'County');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('georgia', 'State of Georgia', 'Georgia');
+INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('georgia', 'State');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('jzm', 'Zemin Jiang', '+1s');
+INSERT INTO `cs6400_summer18_team010`.`Individuals` (`Username`, `JobTitle`, `DateHired`) VALUES ('jzm', 'Chairman', '1989/6/24');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('boyred', 'Boy in Red', '-1s');
+INSERT INTO `cs6400_summer18_team010`.`Individuals` (`Username`, `JobTitle`, `DateHired`) VALUES ('boyred', 'Mogician', '2009/11/01');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('shanghai', 'Shanghai', '+1s');
+INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('shanghai', 'City');
+INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('yimin', 'Yimin Food Company', '+1s');
+INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('yimin', 'Shanghai', '100');

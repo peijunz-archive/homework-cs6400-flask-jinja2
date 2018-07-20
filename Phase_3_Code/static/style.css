@@ -13,15 +13,22 @@
 
 .menu-card {
     margin: auto;
-    margin-top: 10%;
-    margin-bottom: 20%;
+    margin-top: 5%;
+    margin-bottom: 10%;
     max-width: 360px;
 }
 
-body {
-    padding-top: 65px;
+.add-resource-card {
+    margin: auto;
+    margin-top: 5%;
+    margin-bottom: 10%;
+    max-width:1000px;
 }
 
+
+.add-resource-card .form {
+    margin:1em;
+}
 .login-card .form-group {
     position: relative;
 }
@@ -60,4 +67,13 @@ body {
 .hidden-text{
     display: inline;
 }
+}
+
+
+.form-group .info-col {
+    margin: auto;
+}
+
+form label {
+    font-weight: bold;
 }

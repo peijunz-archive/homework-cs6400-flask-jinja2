@@ -1,9 +1,0 @@
-{% macro menus(sep, itemclass) %}
-    <li class="{{ itemclass }}"><a href="add-resource.html"><span class="fa fa-plus-circle"></span> Add Resource</a></li>
-    <li class="{{ itemclass }}"><a href="add-incident.html"><span class="fa fa-map-marker-alt"></span> Add Emergency Incident</a></li>
-    {% if sep %} <li role="separator" class="divider"></li> {% endif %}
-    <li class="{{ itemclass }}"><a href="search.html"><span class="fa fa-search"></span> Search Resources</a></li>
-    {% if sep %} <li role="separator" class="divider"></li> {% endif %}
-    <li class="{{ itemclass }}"><a href="status.html"><span class="fa fa-battery-half"></span> Resource Status</a></li>
-    <li class="{{ itemclass }}"><a href="report.html"><span class="fa fa-file"></span> Resource Report</a></li>
-{%- endmacro %}
