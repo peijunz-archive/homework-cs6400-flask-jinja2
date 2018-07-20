@@ -360,10 +360,12 @@ def deployResource():
 
 @app.route("/totalResource")
 def totalResource():
+    username = request.args.get('username')
     cursor = db.sursor
     sql = "SELECT e.Number, e.Description, count(*) as count \
     FROM Resources r \
     JOIN ESF e ON r.PrimaryESFNumber = e.Number \
+    WHERE r.Username = username \
     GROUP BY PrimaryESFNumber"
     result = []
     try:
@@ -384,11 +386,13 @@ def totalResource():
     
 @app.route("/inuseResource")
 def inuseResource():
+    username = request.args.get('username')
     cursor = db.cursor
     sql = "SELECT e.Description, count(*) as count \
     FROM Resources r \
     JOIN ESF e ON r.PrimaryESFNumber = e.Number \
     JOIN InUse i ON r.ResourceID = i.ResourceID \
+    WHERE r.Username = username \
     GROUP BY PrimaryESFNumber"
     result = []
     try:
