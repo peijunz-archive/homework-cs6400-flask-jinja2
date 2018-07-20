@@ -411,7 +411,7 @@ def findMyRequests():
 def findReceivedRequests():
     username = request.args.get('username')
     cursor = db.cursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
+    sql = "SELECT Resource.ID, Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
