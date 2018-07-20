@@ -1,10 +1,12 @@
 from flask import Flask,request,jsonify,json,render_template,redirect,session
+from ast import literal_eval
 import requests
 from urllib.parse import urlencode
 
 app = Flask(__name__)
 app.secret_key = '_5#y2L"F4Q8dATabASe64OOtEaMOi0]/'
 server = "http://127.0.0.1:5000"
+
 
 def extract(form, *keys):
     '''Extract specified keys and values to construct F from form'''
@@ -15,6 +17,15 @@ def extract(form, *keys):
         F[k] = form.get(k)
     return F
 
+def getESFNum(s):
+    if not s:
+        return None
+    s = s.split()[0].lstrip('(#').strip(')')
+    try:
+        return int(s)
+    except:
+        print('Invalid', s)
+        return None
 # json.dump is able to convert dict F to json
 
 @app.route("/")
@@ -43,6 +54,56 @@ def main_menu():
     print("userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'username', 'userinfo'))
 
+@app.route("/add-resource.do", methods=['POST'])
+def add_resource_do():
+    print(">>> Entering Add resource do", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    if 'nextResourceId' not in session:
+        return "Resource ID is already processed or expired!"
+    F = extract(request.form)
+    print("Original form", request.form)
+    if not F.get('name', '') or len(F['name'])>50:
+        return 'Error in resource name'
+    pESF = getESFNum(F.get('primaryESFNumber', ''))
+    if pESF is None:
+        return 'Error in Primary ESF'
+    else:
+        F['primaryESFNumber'] = pESF
+    if F.get('maxDistance', None):
+        try:
+            v = literal_eval(F.get('maxDistance', None))
+            F['maxDistance'] = v
+        except Valuerror:
+            F['maxDistance'] = None
+    for k in ['latitude', 'longitude', 'cost']:
+        try:
+            v = literal_eval(F.get(k, ''))
+            F[k] = v
+        except ValueError:
+            return "Error in key {}".format(k)
+    capa = [i for i in F.get('capabilities', '').splitlines() if i]
+    F['capabilities'] = capa
+    addESF = request.form.getlist('additionalESFNumbers')
+    L = []
+    for i in addESF:
+        v = getESFNum(i)
+        if v is not None:
+            L.append(v)
+    F['additionalESFNumbers'] = L
+    F['username'] = session['username']
+    url = server+'/addResource'
+    r = requests.post(url, json=F)
+    print("Request content", r.content)
+    t = json.loads(r.content)
+    session.pop('nextResourceId', None)
+    if t['status'] == 'success':
+        '''Do something'''
+        return redirect("/add-resource.html?status=success")
+    else:
+        return 'backend fails'
+
+
 @app.route("/add-resource.html")
 def add_resource():
     print(">>> Entering Add resource", session)
@@ -69,8 +130,8 @@ def add_resource():
     r = requests.get(url)
     print("Request content", r.content)
     t = json.loads(r.content)
-    D['nextResourceId'] = t['nextResourceId']
-    return render_template("add-resource.html", **D, **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF'))
+    session['nextResourceId'] = t['nextResourceId']
+    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
 
 @app.route("/search.html")
 def search():

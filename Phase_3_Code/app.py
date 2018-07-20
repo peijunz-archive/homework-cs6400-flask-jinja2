@@ -155,12 +155,12 @@ def addIncident():
         cursor.execute(sql, (abbrv, date, desc, latitude, longitude, username))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
         print(ex)
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/getNextResourceId")
 def getNextResourceId():
@@ -175,7 +175,6 @@ def getNextResourceId():
         if data is None:
             result['status']= 'No Id Found.'
         else:
-            print(data)
             result['nextResourceId'] = data[10]
         return json.dumps(result)
     except Exception as ex:
@@ -213,12 +212,12 @@ def addResource():
             cursor.execute(sql, (resourceId, cap))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
         print(ex)
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/getIncidentsForUser")
 def getIncidentsForUser():
