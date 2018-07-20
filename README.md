@@ -115,3 +115,10 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"capabilities": ["cap1", "cap2"]
 	}
 	```
+
+- Get Next Resource Id   
+	http://127.0.0.1:5000/getNextResourceId   
+	Sample Result:   
+	```
+	{"nextResourceId": 5}
+	```
