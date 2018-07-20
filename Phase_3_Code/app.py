@@ -26,10 +26,9 @@ def login():
             data = None
         result={}
         if data is None:
-            result['status']='failed'
+            return json.dumps({'status': 'failed'})
         else:
-            result['status']='success'
-        return json.dumps(result)
+            return json.dumps({'status': 'success'})
         #except:
             #print ("Error: unable to fetch data")
 
@@ -324,11 +323,11 @@ def requestResource():
         cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except:
         # Rollback in case there is any error
         db.rollback()
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/deployResource", methods = ['POST', 'DELETE'])
 def deployResource():
@@ -351,11 +350,11 @@ def deployResource():
         cursor.execute(sql_del, (rscID, abbrv, number))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except:
         # Rollback in case there is any error
         db.rollback()
-        return 'failed' 
+        return json.dumps({'status': 'failed'})
 
 @app.route("/totalResource")
 def totalResource():
