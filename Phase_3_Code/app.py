@@ -231,12 +231,12 @@ def getIncidentsForUser():
         else:
             incident={}
             for row in data:
-                incident['Abbreviation'] = row[0]
-                incident['Number'] = row[1]
-                incident['Description'] = row[2]
-                incident['Date'] = row[3]
-                incident['Longitude'] = row[4]
-                incident['Latitude'] = row[5]
+                incident['abbreviation'] = row[0]
+                incident['number'] = row[1]
+                incident['description'] = row[2]
+                incident['date'] = row[3]
+                incident['longitude'] = row[4]
+                incident['latitude'] = row[5]
                 result.append(copy.copy(incident))
         return json.dumps(result)
     except:
@@ -310,9 +310,9 @@ def searchResults():
 def requestResource():
     req_data = request.get_json()
     print(req_data)
-    rscID = req_data['ResourceID']
-    abbrv = req_data['Abbreviation']
-    number = req_data['Number']
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
     requestDate = req_data['requestDate']
     returnDate = req_data['returnDate']
     cursor = db.cursor
@@ -333,11 +333,11 @@ def requestResource():
 def deployResource():
     req_data = request.get_json()
     print(req_data)
-    rscID = req_data['ResourceID']
-    abbrv = req_data['Abbreviation']
-    number = req_data['Number']
-    startDate =req_data['StartDate']
-    returnDate = req_data['ReturnDate']
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    startDate =req_data['startDate']
+    returnDate = req_data['returnDate']
     cursor = db.cursor
     sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
@@ -386,12 +386,12 @@ def findMyResources():
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
-@app.route("findMyRequests")
+@app.route("/findMyRequests")
 def findMyRequests():
-    usernam = request.args.get('username')
+    username = request.args.get('username')
     cursor = db.sursor
     sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
-    FROM Requests \ 
+    FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     WHERE Incidents.Username = %s"
@@ -413,12 +413,12 @@ def findMyRequests():
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
-@app.route("findReceivedRequests")
+@app.route("/findReceivedRequests")
 def findReceivedRequests():
-    usernam = request.args.get('username')
-    cursor = db.s\ursor
+    username = request.args.get('username')
+    cursor = db.cursor
     sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
-    FROM Requests \ 
+    FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     WHERE Resources.Username = %s"
