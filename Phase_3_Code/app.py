@@ -22,15 +22,9 @@ def login():
             # Fetch all the rows in a list of lists.
             data = cursor.fetchone()
         except pymysql.err.ProgrammingError:
-            print("SQL error")
-            data = None
-        result={}
-        if data is None:
+            print ("Error: unable to fetch data")
             return json.dumps({'status': 'failed'})
-        else:
-            return json.dumps({'status': 'success'})
-        #except:
-            #print ("Error: unable to fetch data")
+        return json.dumps({'status': 'success'})
 
         # disconnect from server
         # db.close()
@@ -262,7 +256,7 @@ def searchResults():
     if ESFNumber!=None:
         pieces.append("AND (r.PrimaryESFNumber = %d \
         OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
-    if abbrvNone!=None and number!=None and radius!=None:
+    if abbrv and number!=None and radius!=None:
         pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
          * COS(RADIANS(ic.Latitude)) \
          * COS(RADIANS(r.Longitude - ic.Longitude)) \
@@ -369,18 +363,17 @@ def totalResource():
     try:
         cursor.execute(sql)
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                esf['count'] = row[2]
-                result.append(copy.copy(esf))
-        return json.dumps(result)
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
+    if data is not None:
+        for row in data:
+            res = {}
+            res['Number'] = row[0]
+            res['Description'] = row[1]
+            res['count'] = row[2]
+            result.append(res)
+    print(result)
+    return json.dumps(result)
 
 @app.route("/inuseResource")
 def inuseResource():
