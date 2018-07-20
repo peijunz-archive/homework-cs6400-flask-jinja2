@@ -19,6 +19,13 @@ def extract(form, *keys):
         F[k] = form.get(k)
     return F
 
+def parseObj(s):
+    try:
+        return literal_eval(s)
+    except Exception as e:
+        print(e)
+        return None
+
 def parseESF(s):
     if not s:
         return None
@@ -28,6 +35,19 @@ def parseESF(s):
     except:
         print('Invalid', s)
         return None
+
+def parseIncident(s):
+    print('Incident', s)
+    if not s:
+        return None
+    try:
+        s = s.split()[0].lstrip('(').strip(')').split('-')
+        number = parseObj(s[1])
+        if isinstance(number, int):
+            return s[0], number
+    except Exception as e:
+        print(e)
+    return None, None
 
 '''Caching ESF TimeUnit Incidents and nextResourceID'''
 def getESF():
@@ -134,22 +154,13 @@ def add_resource_do():
     print("Original form", request.form)
     if not F.get('name', '') or len(F['name'])>50:
         return 'Error in resource name'
-    pESF = parseESF(F.get('primaryESFNumber', ''))
-    if pESF is None:
+    F['maxDistance'] = parseObj(F.get('maxDistance', None))
+    F['primaryESFNumber'] = parseESF(F.get('primaryESFNumber', ''))
+    if F['primaryESFNumber'] is None:
         return 'Error in Primary ESF'
-    else:
-        F['primaryESFNumber'] = pESF
-    if F.get('maxDistance', None):
-        try:
-            v = literal_eval(F.get('maxDistance', None))
-            F['maxDistance'] = v
-        except Valuerror:
-            F['maxDistance'] = None
     for k in ['latitude', 'longitude', 'cost']:
-        try:
-            v = literal_eval(F.get(k, ''))
-            F[k] = v
-        except ValueError:
+        F[k] = parseObj(F.get(k, None))
+        if F[k] is None:
             return "Error in key {}".format(k)
     capa = [i for i in F.get('capabilities', '').splitlines() if i]
     F['capabilities'] = capa
@@ -236,7 +247,19 @@ def results():
     print(">>> Entering results", session)
     if 'username' not in session:
         return redirect("/login.html")
-    return render_template("results.html", **extract(session, 'username', 'userinfo'))
+    F = {}
+    F['keyword'] = request.form.get('keyword', '')
+    F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
+    F['radius'] = parseObj(request.form.get('radius', None))
+    F['abbreviation'], F['number'] =parseIncident(request.form.get('incident', ''))
+    url = server+'/searchResults'
+    print("Requesting", url, F)
+    r = requests.post(url, json=F)
+    print('Result content', r.content)
+    result = json.load(r.content)
+    return render_template("results.html",
+                           **result()
+                           **extract(session, 'username', 'userinfo'))
 
 @app.route("/status.html")
 def status():

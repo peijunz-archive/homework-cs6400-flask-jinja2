@@ -237,7 +237,7 @@ def getIncidentsForUser():
         result.append(incident)
     return json.dumps(result)
 
-@app.route("/searchResults")
+@app.route("/searchResults", methods=['POST'])
 def searchResults():
     req_data = request.get_json()
     print(req_data)
@@ -273,7 +273,7 @@ def searchResults():
     para=[keyword]
     if ESFNumber!=None:
         para += [ESFNumber, ESFNumber]
-    if abbrvNone!=None and number!=None and radius!=None:
+    if abbrv!=None and number!=None and radius!=None:
         para += [abbrv, number, radius]
 
     result = []
@@ -282,24 +282,22 @@ def searchResults():
         # Execute the SQL command
         cursor.execute(sql, tuple(para))
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            rsc={}
-            for row in data:
-                rsc['Name'] = row[0]
-                rsc['Cost'] = row[1]
-                rsc['UnitName'] = row[2]
-                rsc['Username'] = row[3]
-                rsc['ReturnDate'] = row[4]
-                if abbrvNone!=None and number!=None and radius!=None:
-                    rsc['proximity'] = row[5]
-                else:
-                    rsc['proximity'] = None
-                result.append(copy.copy(rsc))
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
+    if data is not None:
+        for row in data:
+            rsc = {}
+            rsc['Name'] = row[0]
+            rsc['Cost'] = row[1]
+            rsc['UnitName'] = row[2]
+            rsc['Username'] = row[3]
+            rsc['ReturnDate'] = row[4]
+            if abbrv!=None and number!=None and radius!=None:
+                rsc['proximity'] = row[5]
+            else:
+                rsc['proximity'] = None
+            result.append(copy.copy(rsc))
+    return json.dumps(result)
 
 @app.route("/requestResource", methods=['POST'])
 def requestResource():
