@@ -437,15 +437,16 @@ def findReceivedRequests():
 
 
 ##################Resource Report########################
-@app.route("/totalResource")
-def totalResource():
+@app.route("/resourceReport")
+def resourceReport():
     username = request.args.get('username')
     cursor = db.sursor
-    sql = "SELECT e.Number, e.Description, count(*) as count \
-    FROM Resources r \
-    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
-    WHERE r.Username = %s \
-    GROUP BY PrimaryESFNumber"
+    sql = '''SELECT e.Number, e.Description, count(r.ID) as total, count(i.ResourceID) as inuse FROM
+    (SELECT * FROM Resources WHERE Username = %s) r
+    Right JOIN ESF e ON r.PrimaryESFNumber = e.Number
+    LEFT JOIN InUse i ON r.ID = i.ResourceID
+    GROUP BY e.Number
+    ORDER BY e.Number ASC;'''
     result = []
     try:
         cursor.execute(sql, (username))
@@ -457,37 +458,11 @@ def totalResource():
             res = {}
             res['Number'] = row[0]
             res['Description'] = row[1]
-            res['count'] = row[2]
+            res['total'] = row[2]
+            res['inuse'] = row[3]
             result.append(res)
     print(result)
     return json.dumps(result)
-
-@app.route("/inuseResource")
-def inuseResource():
-    username = request.args.get('username')
-    cursor = db.cursor
-    sql = "SELECT e.Description, count(*) as count \
-    FROM Resources r \
-    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
-    JOIN InUse i ON r.ResourceID = i.ResourceID \
-    WHERE r.Username = %s \
-    GROUP BY PrimaryESFNumber"
-    result = []
-    try:
-        cursor.execute(sql, (username))
-        data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                esf['count'] =row[2]
-                result.append(copy.copy(esf))
-        return json.dumps(result)
-    except:
-        return "Error: unable to fetch data"
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
