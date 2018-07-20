@@ -4,10 +4,12 @@ import requests
 from urllib.parse import urlencode
 
 app = Flask(__name__)
+
+'''Basic Data needed'''
 app.secret_key = '_5#y2L"F4Q8dATabASe64OOtEaMOi0]/'
 server = "http://127.0.0.1:5000"
 
-
+'''Data Parsing'''
 def extract(form, *keys):
     '''Extract specified keys and values to construct F from form'''
     if not keys:
@@ -17,7 +19,7 @@ def extract(form, *keys):
         F[k] = form.get(k)
     return F
 
-def getESFNum(s):
+def parseESF(s):
     if not s:
         return None
     s = s.split()[0].lstrip('(#').strip(')')
@@ -26,18 +28,75 @@ def getESFNum(s):
     except:
         print('Invalid', s)
         return None
-# json.dump is able to convert dict F to json
+
+'''Caching ESF TimeUnit Incidents and nextResourceID'''
+def getESF():
+    if 'ESF' not in session:
+        url = server + '/getESF'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
+
+def getTimeUnit():
+    if 'TimeUnit' not in session:
+        url = server + '/getTimeUnit'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['TimeUnit'] = t['TimeUnit']
+
+def getIncidents():
+    if 'TimeUnit' not in session:
+        url = server + '/getIncidentsForUser?'+urlencode({"username": session['username']})
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['incidents'] = t
+
+def getNextResourceID():
+    url = server + '/getNextResourceId'
+    print("Sending", url)
+    r = requests.get(url)
+    print("Request content", r.content)
+    t = json.loads(r.content)
+    session['nextResourceId'] = t['nextResourceId']
+
+'''Session validation'''
+@app.route("/login.html", methods=['GET', 'POST'])
+def login():
+    print(">>> Entering login page", session)
+    if request.method == "POST":
+        F = extract(request.form)
+        if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
+            print("Invalid username or password")
+        url = server + '/login?' + urlencode(F)
+        print("Sending", url)
+        r = requests.get(url)
+        t = json.loads(r.content)
+        if t['status'] == "success":
+            session['username'] = F['username']
+            print(session)
+            return redirect('menu.html')
+        else:
+            return "Login failed"
+    else:
+        return render_template("login.html")
+
+@app.route('/logout')
+def logout():
+    print(">>> Entering logout", session)
+    session.clear()
+    return redirect('/login.html')
 
 @app.route("/")
 def root():
     if 'username' not in session:
         return redirect("/login.html")
     return redirect("/menu.html")
-
-types = {'Municipalities': 'Category',
-         'GovAgencies': 'AgencyNameLocalOffice',
-         'Companies':['Location','NumberofEmployees'],
-         'Individuals': 'JobTitle'}
 
 @app.route("/menu.html")
 def main_menu():
@@ -54,6 +113,16 @@ def main_menu():
     print("userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'username', 'userinfo'))
 
+@app.route("/add-resource.html")
+def add_resource():
+    print(">>> Entering Add resource", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    getTimeUnit()
+    getESF()
+    getNextResourceID()
+    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
+
 @app.route("/add-resource.do", methods=['POST'])
 def add_resource_do():
     print(">>> Entering Add resource do", session)
@@ -65,7 +134,7 @@ def add_resource_do():
     print("Original form", request.form)
     if not F.get('name', '') or len(F['name'])>50:
         return 'Error in resource name'
-    pESF = getESFNum(F.get('primaryESFNumber', ''))
+    pESF = parseESF(F.get('primaryESFNumber', ''))
     if pESF is None:
         return 'Error in Primary ESF'
     else:
@@ -87,7 +156,7 @@ def add_resource_do():
     addESF = request.form.getlist('additionalESFNumbers')
     L = []
     for i in addESF:
-        v = getESFNum(i)
+        v = parseESF(i)
         if v is not None:
             L.append(v)
     F['additionalESFNumbers'] = L
@@ -103,6 +172,21 @@ def add_resource_do():
     else:
         return 'backend fails'
 
+@app.route("/add-incident.html")
+def add_incident():
+    print(">>> Entering Add incident", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    if 'Declarations' not in session:
+        url = server + '/getDeclarations'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['Declarations'] = t['Declarations']
+    # Get resource ID
+    Decl = [i[1] for i in session['Declarations']]
+    return render_template("add-incident.html", declarations=Decl, **extract(session, 'username', 'userinfo'))
 
 @app.route("/add-incident.do", methods=['POST'])
 def add_incident_do():
@@ -131,74 +215,28 @@ def add_incident_do():
     r = requests.post(url, json=F)
     print("Request content", r.content)
     t = json.loads(r.content)
-    #session.pop('IncidentId', None)
+    session.pop('incidents', None)
     if t['status'] == 'success':
         '''Do something'''
         return redirect("/add-incident.html?status=success")
     else:
         return 'backend fails'
 
-
-@app.route("/add-resource.html")
-def add_resource():
-    print(">>> Entering Add resource", session)
-    if 'username' not in session:
-        return redirect("/login.html")
-    if 'TimeUnit' not in session:
-        url = server + '/getTimeUnit'
-        print("Sending", url)
-        r = requests.get(url)
-        print("Request content", r.content)
-        t = json.loads(r.content)
-        session['TimeUnit'] = t['TimeUnit']
-    if 'ESF' not in session:
-        url = server + '/getESF'
-        print("Sending", url)
-        r = requests.get(url)
-        print("Request content", r.content)
-        t = json.loads(r.content)
-        session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
-    # Get resource ID
-    D = {}
-    url = server + '/getNextResourceId'
-    print("Sending", url)
-    r = requests.get(url)
-    print("Request content", r.content)
-    t = json.loads(r.content)
-    session['nextResourceId'] = t['nextResourceId']
-    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
-
 @app.route("/search.html")
 def search():
     print(">>> Entering search", session)
     if 'username' not in session:
-    # TODO
         return redirect("/login.html")
-    return render_template("search.html", **extract(session, 'username', 'userinfo'))
+    getESF()
+    getIncidents()
+    return render_template("search.html", **extract(session, 'username', 'userinfo', 'ESF', 'incidents'))
 
-@app.route("/add-incident.html")
-def add_incident():
-    print(">>> Entering Add incident", session)
+@app.route("/results.html", methods=['POST'])
+def results():
+    print(">>> Entering results", session)
     if 'username' not in session:
         return redirect("/login.html")
-    if 'Declarations' not in session:
-        url = server + '/getDeclarations'
-        print("Sending", url)
-        r = requests.get(url)
-        print("Request content", r.content)
-        t = json.loads(r.content)
-        session['Declarations'] = t['Declarations']
-    # Get resource ID
-    Decl = [i[1] for i in session['Declarations']]
-    return render_template("add-incident.html", declarations=Decl, **extract(session, 'username', 'userinfo'))
-
-@app.route("/report.html")
-def report():
-    print(">>> Entering report", session)
-    if 'username' not in session:
-        return redirect("/login.html")
-    # TODO
-    return render_template("report.html", **extract(session, 'username', 'userinfo'))
+    return render_template("results.html", **extract(session, 'username', 'userinfo'))
 
 @app.route("/status.html")
 def status():
@@ -208,31 +246,13 @@ def status():
     # TODO
     return render_template("status.html", **extract(session, 'username', 'userinfo'))
 
-@app.route("/login.html", methods=['GET', 'POST'])
-def login_page():
-    print(">>> Entering login page", session)
-    if request.method == "POST":
-        F = extract(request.form)
-        if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
-            print("Invalid username or password")
-        url = server + '/login?' + urlencode(F)
-        print("Sending", url)
-        r = requests.get(url)
-        t = json.loads(r.content)
-        if t['status'] == "success":
-            session['username'] = F['username']
-            print(session)
-            return redirect('menu.html')
-        else:
-            return "Login failed"
-    else:
-        return render_template("login.html")
-
-@app.route('/logout')
-def logout():
-    print(">>> Entering logout", session)
-    session.clear()
-    return redirect('/login.html')
+@app.route("/report.html")
+def report():
+    print(">>> Entering report", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    # TODO
+    return render_template("report.html", **extract(session, 'username', 'userinfo'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5555)

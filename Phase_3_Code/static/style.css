@@ -18,14 +18,14 @@
     max-width: 360px;
 }
 
-.add-card {
+.form-card {
     margin: auto;
     margin-top: 5%;
     margin-bottom: 10%;
     max-width:1000px;
 }
 
-.add-card .form {
+.form-card .form {
     margin:1em;
 }
 .login-card .form-group {

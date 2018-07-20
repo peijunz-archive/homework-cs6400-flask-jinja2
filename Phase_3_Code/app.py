@@ -4,7 +4,7 @@ import copy
 
 app = Flask(__name__)
 db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
- 
+
 @app.route("/")
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
@@ -22,15 +22,9 @@ def login():
             # Fetch all the rows in a list of lists.
             data = cursor.fetchone()
         except pymysql.err.ProgrammingError:
-            print("SQL error")
-            data = None
-        result={}
-        if data is None:
+            print ("Error: unable to fetch data")
             return json.dumps({'status': 'failed'})
-        else:
-            return json.dumps({'status': 'success'})
-        #except:
-            #print ("Error: unable to fetch data")
+        return json.dumps({'status': 'success'})
 
         # disconnect from server
         # db.close()
@@ -226,22 +220,22 @@ def getIncidentsForUser():
         cursor.execute(sql, (username))
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Incidents Found.'})
-        else:
-            incident={}
-            for row in data:
-                incident['abbreviation'] = row[0]
-                incident['number'] = row[1]
-                incident['description'] = row[2]
-                incident['date'] = row[3]
-                incident['longitude'] = row[4]
-                incident['latitude'] = row[5]
-                result.append(copy.copy(incident))
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
-    
+    if data is None:
+        data = []
+    result = []
+    for row in data:
+        incident = {}
+        incident['Abbreviation'] = row[0]
+        incident['Number'] = row[1]
+        incident['Description'] = row[2]
+        incident['Date'] = row[3]
+        incident['Longitude'] = row[4]
+        incident['Latitude'] = row[5]
+        result.append(incident)
+    return json.dumps(result)
+
 @app.route("/searchResults")
 def searchResults():
     req_data = request.get_json()
@@ -251,18 +245,18 @@ def searchResults():
     radius = req_data['radius']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    cursor = db.cursor()  
-    
+    cursor = db.cursor()
+
     if keyword==None:
         keyword = ''
-    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate", 
-              "FROM Resources r", 
+    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate",
+              "FROM Resources r",
               "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID",
               "WHERE r.Name like %%%s%%"]
     if ESFNumber!=None:
         pieces.append("AND (r.PrimaryESFNumber = %d \
         OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
-    if abbrvNone!=None and number!=None and radius!=None:
+    if abbrv and number!=None and radius!=None:
         pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
          * COS(RADIANS(ic.Latitude)) \
          * COS(RADIANS(r.Longitude - ic.Longitude)) \
@@ -274,13 +268,13 @@ def searchResults():
         AND proximity < %f \
         ORDER BY proximity")
     sql = ''.join((string for string in pieces))
-    
+
     para=[keyword]
     if ESFNumber!=None:
         para += [ESFNumber, ESFNumber]
     if abbrvNone!=None and number!=None and radius!=None:
         para += [abbrv, number, radius]
-        
+
     result = []
     try:
         #print(sql)
@@ -302,10 +296,10 @@ def searchResults():
                 else:
                     rsc['proximity'] = None
                 result.append(copy.copy(rsc))
-        return json.dumps(result)    
+        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
-       
+
 @app.route("/requestResource", methods=['POST'])
 def requestResource():
     req_data = request.get_json()
@@ -395,7 +389,7 @@ def findMyRequests():
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     WHERE Incidents.Username = %s"
-    try: 
+    try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
     except:
@@ -423,7 +417,7 @@ def findReceivedRequests():
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     LEFT JOIN (SELECT ResourceID, 'True' as status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
     WHERE Resources.Username = %s"
-    try: 
+    try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
     except:
@@ -456,19 +450,18 @@ def totalResource():
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                esf['count'] = row[2]
-                result.append(copy.copy(esf))
-        return json.dumps(result)    
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
-    
+    if data is not None:
+        for row in data:
+            res = {}
+            res['Number'] = row[0]
+            res['Description'] = row[1]
+            res['count'] = row[2]
+            result.append(res)
+    print(result)
+    return json.dumps(result)
+
 @app.route("/inuseResource")
 def inuseResource():
     username = request.args.get('username')
@@ -495,8 +488,6 @@ def inuseResource():
         return json.dumps(result)
     except:
         return "Error: unable to fetch data"
-
-
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
