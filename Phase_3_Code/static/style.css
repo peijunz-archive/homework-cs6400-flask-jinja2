@@ -3,29 +3,61 @@
  * Copyright 2018 CS6400 Team010
  */
 
-.login-panel {
-    position:absolute;
-    left:50%;
-    top:40%;
-    max-width: 500px;
+
+.login-card {
     margin: auto;
-    width:300px;
-    height:200px;
-    margin:-100px 0 0 -150px;
+    margin-top: 10%;
+    margin-bottom: 20%;
+    max-width: 360px;
 }
 
+.menu-card {
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 20%;
+    max-width: 360px;
+}
 
-.login-panel .form-group {
+body {
+    padding-top: 65px;
+}
+
+.login-card .form-group {
     position: relative;
 }
 
-.login-panel i{
+.login-card i{
     position: absolute;
-    left: 10px;
-    top: 8px;
-    font-size: 18px;
+    left: 9px;
+    top: 12px;
+    font-size: 14px;
 }
 
-.login-panel .form-control {
+.login-card .form-control {
     padding-left: 32px;
+}
+
+
+.navbar-light .navbar-toggler {
+    color: rgba(0,0,0,.5);
+    border-color: rgba(0,0,0,.1);
+}
+.navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.fa{
+    margin-right: 0.2em;
+    width: 1em;
+    text-align:center;
+}
+
+.hidden-text{
+    display: none;
+}
+
+@media (max-width: 800px) {
+.hidden-text{
+    display: inline;
+}
 }
