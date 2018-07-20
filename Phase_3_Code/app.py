@@ -14,6 +14,7 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
+        print(username,password)
         sql = "SELECT * from `User` where Username='" + username + "' and Password='" + password + "'"
         result={}
         #try:

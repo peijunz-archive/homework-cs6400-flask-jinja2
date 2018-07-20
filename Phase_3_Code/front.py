@@ -30,6 +30,7 @@ def login_page():
     if request.method == "POST":
         F = extract(request.form)
         url = server + '/login?' + url_tail(F)
+        print(url)
         r = requests.get(url)
         t = json.loads(r.content)
         return t['status']
