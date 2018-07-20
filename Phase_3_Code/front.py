@@ -37,7 +37,7 @@ def main_menu():
         url = server + '/mainMenu?' + urlencode(extract(session, 'username'))
         print("Sending", url)
         r = requests.get(url)
-        print("Request conetent", r.content)
+        print("Request content", r.content)
         t = json.loads(r.content)
         session['userinfo'] = t
     print("userinfo: ", session.get('userinfo'))
@@ -52,17 +52,25 @@ def add_resource():
         url = server + '/getTimeUnit'
         print("Sending", url)
         r = requests.get(url)
-        print("Request conetent", r.content)
+        print("Request content", r.content)
         t = json.loads(r.content)
         session['TimeUnit'] = t['TimeUnit']
     if 'ESF' not in session:
         url = server + '/getESF'
         print("Sending", url)
         r = requests.get(url)
-        print("Request conetent", r.content)
+        print("Request content", r.content)
         t = json.loads(r.content)
         session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
-    return render_template("add-resource.html", **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF'))
+    # Get resource ID
+    D = {}
+    url = server + '/getNextResourceId'
+    print("Sending", url)
+    r = requests.get(url)
+    print("Request content", r.content)
+    t = json.loads(r.content)
+    D['nextResourceId'] = t['nextResourceId']
+    return render_template("add-resource.html", **D, **extract(session, 'username', 'userinfo', 'TimeUnit', 'ESF'))
 
 @app.route("/search.html")
 def search():
