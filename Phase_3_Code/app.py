@@ -28,10 +28,9 @@ def login():
 
         result={}
         if data is None:
-            result['status']='failed'
+            return json.dumps({'status': 'failed'})
         else:
-            result['status']='success'
-        return json.dumps(result)
+            return json.dumps({'status': 'success'})
         #except:
             #print ("Error: unable to fetch data")
 
@@ -80,68 +79,62 @@ def mainMenu():
 @app.route("/getESF")
 def getESF():
     cursor = db.cursor()
-    sql = "SELECT Number, Description FROM ESF"
-    result=[]
+    sql = "SELECT Number, Description FROM ESF ORDER BY Number ASC"
+    result={}
     try:
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No ESF Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                result.append(copy.copy(esf))
-        return json.dumps(result)
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No ESF Found.'
+    else:
+        print(data)
+        result['ESF'] = data
+    return json.dumps(result)
 
 @app.route("/getTimeUnit")
 def getTimeUnit():
     cursor = db.cursor()
-    sql = "SELECT Name FROM TimeUnit"
-    result=[]
+    sql = "SELECT Name FROM TimeUnit;"
+    result={}
     try:
+        print(sql)
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Time Unit Found.'})
-        else:
-            tu={}
-            for row in data:
-                tu['Name'] = row[0]
-                result.append(copy.copy(tu))
-        return json.dumps(result)
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No Time Unit Found.'
+    else:
+        tu={}
+        result['TimeUnit'] = [row[0] for row in data]
+    print(result)
+    return json.dumps(result)
 
 
 @app.route("/getDeclarations")
 def getDeclarations():
     cursor = db.cursor()
     sql = "SELECT Abbreviation, Name FROM Declarations"
-    result=[]
+    result={}
     try:
         # Execute the SQL command
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Declarations Found.'})
-        else:
-            dc={}
-            for row in data:
-                dc['Abbreviation'] = row[0]
-                dc['Name'] = row[1]
-                result.append(copy.copy(dc))
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
+    if data is None:
+        result['status'] = 'No Declarations Found.'
+    else:
+        print(data)
+        result['Declarations'] = data
+    return json.dumps(result)
 
 @app.route("/addIncident", methods=['POST'])
 def addIncident():
@@ -160,12 +153,12 @@ def addIncident():
         cursor.execute(sql, (abbrv, date, desc, latitude, longitude, username))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
         print(ex)
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/getNextResourceId")
 def getNextResourceId():
@@ -180,7 +173,6 @@ def getNextResourceId():
         if data is None:
             result['status']= 'No Id Found.'
         else:
-            print(data)
             result['nextResourceId'] = data[10]
         return json.dumps(result)
     except Exception as ex:
@@ -218,12 +210,12 @@ def addResource():
             cursor.execute(sql, (resourceId, cap))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
         print(ex)
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/getIncidentsForUser")
 def getIncidentsForUser():
@@ -333,11 +325,11 @@ def requestResource():
         cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except:
         # Rollback in case there is any error
         db.rollback()
-        return 'failed'
+        return json.dumps({'status': 'failed'})
 
 @app.route("/deployResource", methods = ['POST', 'DELETE'])
 def deployResource():
@@ -348,6 +340,7 @@ def deployResource():
     number = req_data['Number']
     startDate =req_data['StartDate']
     returnDate = req_data['ReturnDate']
+    cursor = db.cursor
     sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
     try:
@@ -359,12 +352,61 @@ def deployResource():
         cursor.execute(sql_del, (rscID, abbrv, number))
         # Commit your changes in the database
         db.commit()
-        return 'success'
+        return json.dumps({'status': 'success'})
     except:
         # Rollback in case there is any error
         db.rollback()
-        return 'failed' 
+        return json.dumps({'status': 'failed'})
 
+@app.route("/totalResource")
+def totalResource():
+    cursor = db.sursor
+    sql = "SELECT e.Number, e.Description, count(*) as count \
+    FROM Resources r \
+    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
+    GROUP BY PrimaryESFNumber"
+    result = []
+    try:
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        if data is None:
+            result.append({'status': 'No Resources Found.'})
+        else:
+            esf={}
+            for row in data:
+                esf['Number'] = row[0]
+                esf['Description'] = row[1]
+                esf['count'] = row[2]
+                result.append(copy.copy(esf))
+        return json.dumps(result)    
+    except:
+        return "Error: unable to fetch data"
+    
+@app.route("/inuseResource")
+def inuseResource():
+    cursor = db.cursor
+    sql = "SELECT e.Description, count(*) as count \
+    FROM Resources r \
+    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
+    JOIN InUse i ON r.ResourceID = i.ResourceID \
+    GROUP BY PrimaryESFNumber"
+    result = []
+    try:
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        if data is None:
+            result.append({'status': 'No Resources Found.'})
+        else:
+            esf={}
+            for row in data:
+                esf['Number'] = row[0]
+                esf['Description'] = row[1]
+                esf['count'] =row[2]
+                result.append(copy.copy(esf))
+        return json.dumps(result)
+    except:
+        return "Error: unable to fetch data"
+        
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)

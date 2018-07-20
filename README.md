@@ -37,53 +37,53 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 ### Instructions to start backend service:
 1. In app.py file, you may need to change connection strings at line 5.
 2. Run this command: `pipenv run python app.py`
-3. Go to http://127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".    
+3. Go to http://127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".
 
 To add a new endpoint, follow the login endpoint sample.
 To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python_database_access.htm
 
 ### Interface between front end/back end
 - Login
-	First, you have to have one row in user table to be able test this end point.    
-	Sample request: <http://127.0.0.1:5000/login?username=test&password=test>     
-	Sample result: 
+	First, you have to have one row in user table to be able test this end point.
+	Sample request: <http://127.0.0.1:5000/login?username=test&password=test>
+	Sample result:
 	```
 	{"status": "success"}
 	```
 
-- Main Menu/User information   
-	http://127.0.0.1:5000/mainMenu?username=gov   
+- Main Menu/User information
+	http://127.0.0.1:5000/mainMenu?username=gov
 	Sample result:
 	```
 	{"AgencyNameLocationOffice": "agencyName", "Category": null, "DateHired": null, "JobTitle": null, "Location": null, "NumberofEmployees": null, "Type": "GovAgency", "Username": "gov"}
 	```
-- Get ESF   
-	http://127.0.0.1:5000/getESF   
+- Get ESF
+	http://127.0.0.1:5000/getESF
 	Sample result:
 	```
-	[{"Description": "Transportation", "Name": 1}, {"Description": "Communications", "Name": 2}, {"Description": "Public Works and Engineering", "Name": 3}, {"Description": "Firefighting", "Name": 4}, {"Description": "Emergency Management", "Name": 5}, {"Description": "Mass Care, Emergency Assistance, Housing, and Human Services", "Name": 6}, {"Description": "Logistics Management and Resource Support", "Name": 7}, {"Description": "Public Health and Medical Services", "Name": 8}, {"Description": "Search and Rescue", "Name": 9}, {"Description": "Oil and Hazardous Materials Response", "Name": 10}, {"Description": "Agriculture and Natural Resources", "Name": 11}, {"Description": "Energy", "Name": 12}, {"Description": "Public Safety and Security", "Name": 13}, {"Description": "Long-Term Community Recovery", "Name": 14}, {"Description": "External Affairs", "Name": 15}]
+    ((1, 'Transportation'), (2, 'Communications'), (3, 'Public Works and Engineering'), (4, 'Firefighting'), (5, 'Emergency Management'), (6, 'Mass Care, Emergency Assistance, Housing, and Human Services'), (7, 'Logistics Management and Resource Support'), (8, 'Public Health and Medical Services'), (9, 'Search and Rescue'), (10, 'Oil and Hazardous Materials Response'), (11, 'Agriculture and Natural Resources'), (12, 'Energy'), (13, 'Public Safety and Security'), (14, 'Long-Term Community Recovery'), (15, 'External Affairs'))
 	```
-- Get Time Unit   
-	http://127.0.0.1:5000/getTimeUnit   
+- Get Time Unit
+	http://127.0.0.1:5000/getTimeUnit
 	Sample result:
 	```
-	[{"Name": "Day"}, {"Name": "Hour"}, {"Name": "Week"}]
+	{'TimeUnit': ['Day', 'Each', 'Hour', 'Week']}
 	```
-- Get Declarations   
-	http://127.0.0.1:5000/getDeclarations   
-	Sample result: 
+- Get Declarations
+	http://127.0.0.1:5000/getDeclarations
+	Sample result:
 	```
-	[{"Abbreviation": "ED", "Name": "Emergency"}, {"Abbreviation": "FM", "Name": "Fire Management Assistance"}, {"Abbreviation": "FS", "Name": "Fire Suppression Authorization"}, {"Abbreviation": "MD", "Name": "Major Disaster"}]
+	(('ED', 'Emergency'), ('FM', 'Fire Management Assistance'), ('FS', 'Fire Suppression Authorization'), ('MD', 'Major Disaster'))
 	```
-- Get Incidents for user   
-	http://127.0.0.1:5000/getIncidentsForUser?username=gov   
+- Get Incidents for user
+	http://127.0.0.1:5000/getIncidentsForUser?username=gov
 	Sample result:
 	```
 	[{"Abbreviation": "ED", "Date": "Wed, 18 Jul 2018 00:00:00 GMT", "Description": "test", "Latitude": 40.0, "Longitude": 40.0, "Name": 2}]
 	```
-- Add Incident   
-**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**   
-	POST to /addIncident   
+- Add Incident
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+	POST to /addIncident
 	Sample JSON Body:
 	```
 	{
@@ -95,10 +95,15 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"username": "gov"
 	}
 	```
+	Sample result:
+	```
+	{"status": "success"}
+	{"status": "failed"}
+	```
 
-- Add Resource   
-**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**   
-	POST to /addResource   
+- Add Resource
+**If you have Postman, import CS6400.postman_collection.json from Phase 3 Code to your Postman to test this endpoint easily.**
+	POST to /addResource
 	Sample JSON Body:
 	```
 	{
@@ -115,10 +120,15 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"capabilities": ["cap1", "cap2"]
 	}
 	```
+	Sample result:
+	```
+	{"status": "success"}
+	{"status": "failed"}
+	```
 
-- Get Next Resource Id   
-	http://127.0.0.1:5000/getNextResourceId   
-	Sample Result:   
+- Get Next Resource Id
+	http://127.0.0.1:5000/getNextResourceId
+	Sample Result:
 	```
 	{"nextResourceId": 5}
 	```
