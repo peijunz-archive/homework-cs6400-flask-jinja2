@@ -324,6 +324,7 @@ def deployResource():
     number = req_data['Number']
     startDate =req_data['StartDate']
     returnDate = req_data['ReturnDate']
+    cursor = db.cursor
     sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
     try:
@@ -341,6 +342,55 @@ def deployResource():
         db.rollback()
         return 'failed' 
 
+@app.route("/totalResource")
+def totalResource():
+    cursor = db.sursor
+    sql = "SELECT e.Number, e.Description, count(*) as count \
+    FROM Resources r \
+    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
+    GROUP BY PrimaryESFNumber"
+    result = []
+    try:
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        if data is None:
+            result.append({'status': 'No Resources Found.'})
+        else:
+            esf={}
+            for row in data:
+                esf['Number'] = row[0]
+                esf['Description'] = row[1]
+                esf['count'] = row[2]
+                result.append(copy.copy(esf))
+        return json.dumps(result)    
+    except:
+        return "Error: unable to fetch data"
+    
+@app.route("/inuseResource")
+def inuseResource():
+    cursor = db.cursor
+    sql = "SELECT e.Description, count(*) as count \
+    FROM Resources r \
+    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
+    JOIN InUse i ON r.ResourceID = i.ResourceID \
+    GROUP BY PrimaryESFNumber"
+    result = []
+    try:
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        if data is None:
+            result.append({'status': 'No Resources Found.'})
+        else:
+            esf={}
+            for row in data:
+                esf['Number'] = row[0]
+                esf['Description'] = row[1]
+                esf['count'] =row[2]
+                result.append(copy.copy(esf))
+        return json.dumps(result)
+    except:
+        return "Error: unable to fetch data"
+        
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
