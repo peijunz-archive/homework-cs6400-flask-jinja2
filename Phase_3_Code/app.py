@@ -304,9 +304,9 @@ def searchResults():
 def requestResource():
     req_data = request.get_json()
     print(req_data)
-    rscID = req_data['ResourceID']
-    abbrv = req_data['Abbreviation']
-    number = req_data['Number']
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
     requestDate = req_data['requestDate']
     returnDate = req_data['returnDate']
     cursor = db.cursor
@@ -327,11 +327,11 @@ def requestResource():
 def deployResource():
     req_data = request.get_json()
     print(req_data)
-    rscID = req_data['ResourceID']
-    abbrv = req_data['Abbreviation']
-    number = req_data['Number']
-    startDate =req_data['StartDate']
-    returnDate = req_data['ReturnDate']
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    startDate =req_data['startDate']
+    returnDate = req_data['returnDate']
     cursor = db.cursor
     sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
@@ -350,6 +350,92 @@ def deployResource():
         db.rollback()
         return json.dumps({'status': 'failed'})
 
+
+####################Resource Status############################
+@app.route("/findMyResources")
+def findMyResources():
+    username = request.args.get('username')
+    cursor =  db.cursor
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, InUse.StartDate, InUse.ReturnDate \
+    FROM InUse \
+    INNER JOIN Resources ON InUse.ResourceID = Resources.ID \
+    INNER JOIN Incidents ON InUse.Abbreviation = Incidents.Abbreviation AND InUse.Number = Incidents.Number \
+    WHERE Incidents.Username = %s"
+    try:
+        cursor.execute(sql, (username))
+        data = cursor.fetchall()
+    except:
+        return "Error: unable to fetch data"
+    result = []
+    if data is None:
+        result.append({'status': 'No Resources Found.'})
+    else:
+        rsc={}
+        for row in data:
+            rsc['RscName'] = row[0]
+            rsc['IncDes'] = row[1]
+            rsc['RscUsername'] = row[2]
+            rsc['StartDate'] = row[3]
+            rsc['ReturnDate'] = row[4]
+            result.append(copy.copy(rsc))
+    return json.dumps(result)
+
+@app.route("/findMyRequests")
+def findMyRequests():
+    username = request.args.get('username')
+    cursor = db.sursor
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    FROM Requests \
+    INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
+    INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    WHERE Incidents.Username = %s"
+    try:
+        cursor.execute(sql, (username))
+        data = cursor.fetchall()
+    except:
+        return "Error: unable to fetch data"
+    result = []
+    if data is None:
+        result.append({'status': 'No Resources Found.'})
+    else:
+        rsc={}
+        for row in data:
+            rsc['RscName'] = row[0]
+            rsc['IncDes'] = row[1]
+            rsc['RscUsername'] = row[2]
+            rsc['ReturnDate'] = row[3]
+            result.append(copy.copy(rsc))
+    return json.dumps(result)
+
+@app.route("/findReceivedRequests")
+def findReceivedRequests():
+    username = request.args.get('username')
+    cursor = db.cursor
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    FROM Requests \
+    INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
+    INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    WHERE Resources.Username = %s"
+    try:
+        cursor.execute(sql, (username))
+        data = cursor.fetchall()
+    except:
+        return "Error: unable to fetch data"
+    result = []
+    if data is None:
+        result.append({'status': 'No Resources Found.'})
+    else:
+        rsc={}
+        for row in data:
+            rsc['RscName'] = row[0]
+            rsc['IncDes'] = row[1]
+            rsc['RscUsername'] = row[2]
+            rsc['ReturnDate'] = row[3]
+            result.append(copy.copy(rsc))
+    return json.dumps(result)
+
+
+##################Resource Report########################
 @app.route("/totalResource")
 def totalResource():
     username = request.args.get('username')
@@ -357,11 +443,11 @@ def totalResource():
     sql = "SELECT e.Number, e.Description, count(*) as count \
     FROM Resources r \
     JOIN ESF e ON r.PrimaryESFNumber = e.Number \
-    WHERE r.Username = username \
+    WHERE r.Username = %s \
     GROUP BY PrimaryESFNumber"
     result = []
     try:
-        cursor.execute(sql)
+        cursor.execute(sql, (username))
         data = cursor.fetchall()
     except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
@@ -383,11 +469,11 @@ def inuseResource():
     FROM Resources r \
     JOIN ESF e ON r.PrimaryESFNumber = e.Number \
     JOIN InUse i ON r.ResourceID = i.ResourceID \
-    WHERE r.Username = username \
+    WHERE r.Username = %s \
     GROUP BY PrimaryESFNumber"
     result = []
     try:
-        cursor.execute(sql)
+        cursor.execute(sql, (username))
         data = cursor.fetchall()
         if data is None:
             result.append({'status': 'No Resources Found.'})
@@ -401,7 +487,6 @@ def inuseResource():
         return json.dumps(result)
     except:
         return "Error: unable to fetch data"
-
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
