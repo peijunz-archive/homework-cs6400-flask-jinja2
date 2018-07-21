@@ -10,7 +10,7 @@
     <div class="card-body">
         <h4>
         {% if incident %}
-            Results for {{ incident }}
+            Results for <span class="incidentName text-primary">{{ incident }}</span>
         {% else %}
             All Resources
         {% endif %}
@@ -51,13 +51,13 @@
                 {% if it.Own and it.ReturnDate %}
                     Deployed
                 {% else %}
-                    <a class="btn btn-secondary" href="?request={{it.ID}}">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#requestModal" data-id="{{ it.ID }}">
                     {% if it.Own %}
                     Deploy
                     {% else %}
                     Request
                     {% endif %}
-                    </a>
+                    </button>
                 {% endif %}
                 </td>
                 {% endif %}
@@ -67,4 +67,8 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block modal %}
+{% include 'return-date.html' %}
 {% endblock %}
