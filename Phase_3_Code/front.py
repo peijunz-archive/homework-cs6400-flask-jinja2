@@ -45,10 +45,10 @@ def parseIncident(s):
         s = s.split()[0].lstrip('(').strip(')').split('-')
         number = parseObj(s[1])
         if isinstance(number, int):
-            return s[0], number
+            return {"abbreviation":s[0], "number": number}
     except Exception as e:
         print(e)
-    return None, None
+    return None
 
 '''Caching ESF TimeUnit Incidents and nextResourceID'''
 def getESF():
@@ -253,7 +253,11 @@ def results():
     F['keyword'] = request.form.get('keyword', '')
     F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
     F['radius'] = parseObj(request.form.get('radius', None))
-    F['abbreviation'], F['number'] =parseIncident(request.form.get('incident', ''))
+    incident =parseIncident(request.form.get('incident', ''))
+    if incident is not None:
+        F.update(incident)
+        incident = request.form.get('incident', '').split()
+        incident = ' '.join(incident[1:]+incident[:1])
     url = server+'/searchResults'
     print("Requesting", url, F)
     r = requests.post(url, json=F)
@@ -291,7 +295,19 @@ def login_page():
         else:
             return "Login failed"
     else:
-        return render_template("status.html", **extract(session, 'name', 'username', 'userinfo'))
+        return redirect("/login.html")
+    #url = server + '/resourceStatus?'+ urlencode({'username':session['username']})
+    #r = requests.get(url)
+    #print("Request content", r.content)
+    #t = json.loads(r.content)
+    #total = 0
+    #inuse = 0
+    #for i in t:
+    #    total += i['total']
+    #    inuse += i['inuse']
+    dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
+    return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
+                           **extract(session, 'name', 'username', 'userinfo'))
 
 
 @app.route("/report.html")

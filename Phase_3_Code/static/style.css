@@ -86,6 +86,12 @@ td .btn {
     width: 6em;
 }
 
+
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
   background-color: #D1D119;
+
+caption {
+    caption-side: top;
+    font-size: large;
+    color: #212529;
 }

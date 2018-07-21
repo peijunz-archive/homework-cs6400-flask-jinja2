@@ -1,3 +1,92 @@
 {% extends "base.html" %}
 
 {% block title %}Resource Status{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h3 class="panel-title">Resource Status</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <caption>Resources In Use</caption>
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Resource Name</th>
+                    <th scope="col">Incident</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Return By</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for it in inuse %}
+                <tr>
+                    <td scope="col">{{ it.ID }}</td>
+                    <td scope="col">{{ it.Name }}</td>
+                    <td scope="col">{{ it.incident }}</td>
+                    <td scope="col">{{ it.owner }}</td>
+                    <td scope="col">{{ it.startDate }}</td>
+                    <td scope="col">{{ it.returnDate }}</td>
+                    <td scope="col">action here</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-striped">
+                <caption>Resources Requested by me</caption>
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Resource Name</th>
+                    <th scope="col">Incident</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Return By</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for it in requested %}
+                <tr>
+                    <td scope="col">{{ it.ID }}</td>
+                    <td scope="col">{{ it.Name }}</td>
+                    <td scope="col">{{ it.incident }}</td>
+                    <td scope="col">{{ it.owner }}</td>
+                    <td scope="col">{{ it.returnDate }}</td>
+                    <td scope="col">action here</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-striped">
+                <caption>Resource Requests received by me</caption>
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Resource Name</th>
+                    <th scope="col">Incident</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Return By</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for it in received %}
+                <tr>
+                    <td scope="col">{{ it.ID }}</td>
+                    <td scope="col">{{ it.Name }}</td>
+                    <td scope="col">{{ it.incident }}</td>
+                    <td scope="col">{{ it.owner }}</td>
+                    <td scope="col">{{ it.returnDate }}</td>
+                    <td scope="col">action here</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

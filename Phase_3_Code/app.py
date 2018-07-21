@@ -245,59 +245,22 @@ def getIncidentsForUser():
         result.append(incident)
     return json.dumps(result)
 
+from search import sql_string, sql_format
 @app.route("/searchResults", methods=['POST'])
 def searchResults():
     req_data = request.get_json()
-    # print(req_data)
-    keyword = req_data['keyword'] if 'keyword' in req_data else None
-    ESFNumber = req_data['ESFNumber']  if 'ESFNumber' in req_data else None
-    radius = req_data['radius']  if 'radius' in req_data else None
-    abbrv = req_data['abbreviation']  if 'abbreviation' in req_data else None
-    number = req_data['number']  if 'number' in req_data else None
-    cursor = db.cursor()
-    # print(keyword, ESFNumber, radius, abbrv, number)
-    if keyword==None:
-        keyword = ''
-    keyword = '%{}%'.format(keyword)
-    pieces = ["SELECT r.ID, r.Name as ResourceName, u.Name as OwnerName, r.Cost, r.UnitName, i.ReturnDate, COALESCE(i.ResourceID, 'Available') AS Status ",
-              "FROM Resources r JOIN User u ON r.Username = u.Username",
-              "LEFT JOIN InUse i ON r.ID = i.ResourceID",
-              "WHERE r.Name like %s"]
-    if ESFNumber!=None:
-        pieces.append('''AND (r.PrimaryESFNumber = %s
-        OR %s IN (SELECT ESFNumber FROM AdditionalESF ad
-        WHERE ad.ResourceID = r.ID))'''
-                      )
-    if abbrv!=None and number!=None and radius!=None:
-        pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
-         * COS(RADIANS(ic.Latitude)) \
-         * COS(RADIANS(r.Longitude - ic.Longitude)) \
-         + SIN(RADIANS(r.Latitude)) \
-         * SIN(RADIANS(ic.Latitude))) AS proximity")
-        pieces.insert(3, "JOIN Incidents ic")
-        pieces.append("AND ic.Abbreviation = %s \
-        AND ic.Number = %s \
-        AND r.ID NOT IN (SELECT ResourceID FROM LastUsed WHERE Abbreviation = %s AND Number = %s) \
-        HAVING proximity < %s \
-        ORDER BY proximity")
-    sql = '\n'.join((string for string in pieces))
-
-    para=[keyword]
-    if ESFNumber!=None:
-        para += [ESFNumber, ESFNumber]
-    if abbrv!=None and number!=None and radius!=None:
-        para += [abbrv, number, abbrv, number, radius]
-
+    print(req_data)
+    sql, args = sql_string(**req_data)
     result = []
+    cursor = db.cursor()
     try:
-        #print(sql)
         # Execute the SQL command
-        print(sql, tuple(para))
-        cursor.execute(sql, tuple(para))
+        print(sql, args)
+        cursor.execute(sql, args)
         data = cursor.fetchall()
     except Exception as e:
         print('Search Error:', e)
-        print('formatted', sql%tuple(para))
+        print("Query String\n", sql_format(sql, args))
         return "Error: unable to fetch data"
     if data is not None:
         for row in data:
@@ -305,15 +268,13 @@ def searchResults():
             rsc['ID'] = row[0]
             rsc['Name'] = row[1]
             rsc['Owner'] = row[2]
-            rsc['Cost'] = str(row[3])
+            rsc['Cost'] = float(row[3])
             rsc['UnitName'] = row[4]
-            rsc['ReturnDate'] = row[5]
-            rsc['Status'] = row[6]
-            if abbrv!=None and number!=None and radius!=None:
-                rsc['proximity'] = row[7]
-            else:
-                rsc['proximity'] = None
-            result.append(copy.copy(rsc))
+            rsc['ReturnDate'] = None if row[5] is None else row[5].isocalendar()
+            if len(row)>6:
+                rsc['proximity'] = row[6]
+                rsc['Own'] = row[7]
+            result.append(rsc)
             print(rsc)
     return json.dumps(result)
 
@@ -325,7 +286,7 @@ def requestResource():
     abbrv = req_data['abbreviation']
     number = req_data['number']
     requestDate = req_data['requestDate']
-    returnDate = req_data['returnDate'].strftime('%Y-%m-%d')
+    returnDate = req_data['returnDate']
     cursor = db.cursor()
     sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"
     try:
@@ -375,16 +336,18 @@ def deployResource():
 @app.route("/findMyResources")
 def findMyResources():
     username = request.args.get('username')
-    cursor =  db.cursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, InUse.StartDate, InUse.ReturnDate \
+    cursor =  db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, InUse.StartDate, InUse.ReturnDate, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM InUse \
     INNER JOIN Resources ON InUse.ResourceID = Resources.ID \
     INNER JOIN Incidents ON InUse.Abbreviation = Incidents.Abbreviation AND InUse.Number = Incidents.Number \
+    JOIN User u ON Resources.Username = u.Username \
     WHERE Incidents.Username = %s"
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-    except:
+    except Exception as ex:
+        print(ex)
         return "Error: unable to fetch data"
     result = []
     if data is None:
@@ -395,19 +358,24 @@ def findMyResources():
             rsc['RscName'] = row[0]
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
-            rsc['StartDate'] = row[3]
-            rsc['ReturnDate'] = row[4]
+            rsc['OwnerName'] = row[3]
+            rsc['StartDate'] = row[4]
+            rsc['ReturnDate'] = row[5]
+            rsc['ResourceId'] = row[6]
+            rsc['IncidentAbbrv'] = row[7]
+            rsc['IncidentNumber'] = row[8]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
 @app.route("/findMyRequests")
 def findMyRequests():
     username = request.args.get('username')
-    cursor = db.sursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    cursor = db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, Requests.ReturnDate, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    JOIN User u ON Resources.Username = u.Username \
     WHERE Incidents.Username = %s"
     try:
         cursor.execute(sql, (username))
@@ -423,24 +391,30 @@ def findMyRequests():
             rsc['RscName'] = row[0]
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
-            rsc['ReturnDate'] = row[3]
+            rsc['OwnerName'] = row[3]
+            rsc['ReturnDate'] = row[4]
+            rsc['ResourceID'] = row[5]
+            rsc['IncidentAbbrv'] = row[6]
+            rsc['IncidentNumber'] = row[7]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
 @app.route("/findReceivedRequests")
 def findReceivedRequests():
     username = request.args.get('username')
-    cursor = db.cursor
-    sql = "SELECT Resource.ID, Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
+    cursor = db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     LEFT JOIN (SELECT ResourceID, 'True' as status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
+    JOIN User u ON Incidents.Username = u.Username \
     WHERE Resources.Username = %s"
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-    except:
+    except Exception as ex:
+        print(ex)
         return "Error: unable to fetch data"
     result = []
     if data is None:
@@ -452,8 +426,57 @@ def findReceivedRequests():
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
             rsc['ReturnDate'] = row[3]
+            rsc['IncidentOwnerName'] = row[4]
+            rsc['ResourceId'] = row[5]
+            rsc['IncidentAbbrv'] = row[6]
+            rsc['IncidentNumber'] = row[7]
             result.append(copy.copy(rsc))
     return json.dumps(result)
+
+@app.route("/deleteRequest", methods = ['POST'])
+def deleteRequest():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    cursor = db.cursor()
+    sql_del = "DELETE FROM Requests WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    try:
+        # Execute the SQL command
+        cursor.execute(sql_del, (rscID, abbrv, number))
+        # Commit your changes in the database
+        db.commit()
+        return json.dumps({'status': 'success'})
+    except Exception as ex:
+        # Rollback in case there is any error
+        db.rollback()
+        print(ex)
+        return json.dumps({'status': 'failed'})
+
+@app.route("/returnResource", methods = ['POST'])
+def returnResource():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    cursor = db.cursor()
+    sql = "REPLACE into LastUsed (ResourceID, Abbreviation, Number) VALUES (%s, %s, %s)"
+    sqlDel = "DELETE FROM InUse WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    try:
+        # Execute the SQL command
+        cursor.execute(sql, (rscID, abbrv, number))
+        # Execute the SQL command
+        cursor.execute(sqlDel, (rscID, abbrv, number))
+        # Commit your changes in the database
+        db.commit()
+        return json.dumps({'status': 'success'})
+    except Exception as ex:
+        # Rollback in case there is any error
+        db.rollback()
+        print(ex)
+        return json.dumps({'status': 'failed'})
 
 
 ##################Resource Report########################
