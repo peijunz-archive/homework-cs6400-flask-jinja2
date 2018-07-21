@@ -143,3 +143,71 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
     {"Number":3, "Description":"Public works and Engeering", "total":8, "inuse":7},
     ]
     ```
+
+- Search Resources   
+	POST to /searchResults   
+	Searching by all fields:
+	```
+	{
+		"keyword": "resource",
+		"ESFNumber": 6,
+		"radius": 10,
+		"abbreviation": "ED",
+		"number": "2"
+	}
+	```
+	OR just searching by keyword:
+	```
+	{
+		"keyword": "resource"
+	}
+	```
+	OR searching by keyword and location:
+	```
+	{
+		"keyword": "resource",
+		"radius": 10,
+		"abbreviation": "ED",
+		"number": 2
+	}
+	```
+	Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched from POST json payload.   
+	If it is searching by location, radius, abbreviation and number are required. 
+	Sample result:   
+	```
+	[
+		{"Cost": "100", "ID": 3, "Name": "resource1", "Owner": "Government", "ReturnDate": "Mon, 10 Sep 2018 00:00:00 GMT", "Status": "3", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
+		{"Cost": "100", "ID": 4, "Name": "resource2", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
+		{"Cost": "100", "ID": 5, "Name": "resource3", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
+		{"Cost": "100", "ID": 6, "Name": "resource4", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}
+	]
+	```
+	Notice that if `Status` has a number, it is not available.
+
+- Request Resource   
+	POST to /requestResource
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3,
+		"requestDate": "2018-7-21",
+		"returnDate": "2018-8-21"
+	}
+	```
+	Sample Result:
+	`{"status": "success"}`
+
+- Deploy Resource   
+	POST to /deployResource
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3
+	}
+	```
+	Sample Result: 
+	`{"status": "success"}`
