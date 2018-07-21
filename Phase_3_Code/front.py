@@ -274,8 +274,18 @@ def status():
     print(">>> Entering status", session)
     if 'username' not in session:
         return redirect("/login.html")
-    # TODO
-    return render_template("status.html", **extract(session, 'name', 'username', 'userinfo'))
+    #url = server + '/resourceStatus?'+ urlencode({'username':session['username']})
+    #r = requests.get(url)
+    #print("Request content", r.content)
+    #t = json.loads(r.content)
+    #total = 0
+    #inuse = 0
+    #for i in t:
+    #    total += i['total']
+    #    inuse += i['inuse']
+    dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
+    return render_template("status.html", inuse=[dummy], requested=[dummy], received=[dummy],
+                           **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/report.html")
 def report():
