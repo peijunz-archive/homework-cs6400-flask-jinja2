@@ -76,3 +76,12 @@
 form label {
     font-weight: bold;
 }
+.table td{
+    vertical-align: text-bottom;
+}
+tr{
+    text-align: center;
+}
+td .btn {
+    width: 6em;
+}
