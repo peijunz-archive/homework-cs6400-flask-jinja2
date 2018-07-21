@@ -132,3 +132,14 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	```
 	{"nextResourceId": 5}
 	```
+
+- Resource Report
+    + http://127.0.0.1:5000/resourceReport?username=gov
+    + Sample result
+    ```json
+    [
+    {"Number":1, "Description":"Transportation", "total":5, "inuse":2},
+    {"Number":2, "Description":"Communications", "total":2, "inuse":0},
+    {"Number":3, "Description":"Public works and Engeering", "total":8, "inuse":7},
+    ]
+    ```

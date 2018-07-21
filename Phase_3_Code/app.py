@@ -1,10 +1,16 @@
 from flask import Flask,request,jsonify,json,render_template
 import pymysql
 import copy
+import datetime
 
 app = Flask(__name__)
+<<<<<<< HEAD
 db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock')
  
+=======
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
+
+>>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
 @app.route("/")
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
@@ -14,8 +20,12 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
+<<<<<<< HEAD
 
         sql = "SELECT * from `User` where Username=%s and Password=%s"
+=======
+        sql = "SELECT Name from `User` where Username=%s and Password=%s"
+>>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
         try:
             #Execute the SQL command
             print(sql%(username, password))
@@ -23,16 +33,18 @@ def login():
             # Fetch all the rows in a list of lists.
             data = cursor.fetchone()
         except pymysql.err.ProgrammingError:
+<<<<<<< HEAD
             print("SQL error")
             data = None
 
         result={}
         if data is None:
+=======
+            print ("Error: unable to fetch data")
+>>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
             return json.dumps({'status': 'failed'})
-        else:
-            return json.dumps({'status': 'success'})
-        #except:
-            #print ("Error: unable to fetch data")
+        print(data)
+        return json.dumps({'status': 'success', 'name':data[0]})
 
         # disconnect from server
         # db.close()
@@ -228,23 +240,23 @@ def getIncidentsForUser():
         cursor.execute(sql, (username))
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Incidents Found.'})
-        else:
-            incident={}
-            for row in data:
-                incident['abbreviation'] = row[0]
-                incident['number'] = row[1]
-                incident['description'] = row[2]
-                incident['date'] = row[3]
-                incident['longitude'] = row[4]
-                incident['latitude'] = row[5]
-                result.append(copy.copy(incident))
-        return json.dumps(result)
     except:
         return "Error: unable to fetch data"
-    
-@app.route("/searchResults")
+    if data is None:
+        data = []
+    result = []
+    for row in data:
+        incident = {}
+        incident['Abbreviation'] = row[0]
+        incident['Number'] = row[1]
+        incident['Description'] = row[2]
+        incident['Date'] = row[3]
+        incident['Longitude'] = row[4]
+        incident['Latitude'] = row[5]
+        result.append(incident)
+    return json.dumps(result)
+
+@app.route("/searchResults", methods=['POST'])
 def searchResults():
     req_data = request.get_json()
     print(req_data)
@@ -253,61 +265,67 @@ def searchResults():
     radius = req_data['radius']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    cursor = db.cursor()  
-    
+    cursor = db.cursor()
+
     if keyword==None:
         keyword = ''
-    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate", 
-              "FROM Resources r", 
-              "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID",
-              "WHERE r.Name like %%%s%%"]
+    keyword = '%{}%'.format(keyword)
+    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate",
+              "FROM Resources r",
+              "LEFT JOIN InUse i ON r.ID = i.ResourceID",
+              "WHERE r.Name like %s"]
     if ESFNumber!=None:
-        pieces.append("AND (r.PrimaryESFNumber = %d \
-        OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
-    if abbrvNone!=None and number!=None and radius!=None:
+        pieces.append('''AND (r.PrimaryESFNumber = %s
+        OR %s IN (SELECT ESFNumber FROM AdditionalESF ad
+        WHERE ad.ResourceID = r.ID))'''
+                      )
+    if abbrv!=None and number!=None and radius!=None:
         pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
          * COS(RADIANS(ic.Latitude)) \
          * COS(RADIANS(r.Longitude - ic.Longitude)) \
          + SIN(RADIANS(r.Latitude)) \
          * SIN(RADIANS(ic.Latitude))) AS proximity")
-        pieces.insert(3, ",Incident ic")
+        pieces.insert(3, "JOIN Incidents ic")
         pieces.append("AND ic.Abbreviation = %s \
-        AND ic.Number = %d \
-        AND proximity < %f \
+        AND ic.Number = %s \
+        HAVING proximity < %s \
         ORDER BY proximity")
-    sql = ''.join((string for string in pieces))
-    
+    sql = '\n'.join((string for string in pieces))
+
     para=[keyword]
     if ESFNumber!=None:
         para += [ESFNumber, ESFNumber]
-    if abbrvNone!=None and number!=None and radius!=None:
+    if abbrv!=None and number!=None and radius!=None:
         para += [abbrv, number, radius]
-        
+
     result = []
     try:
         #print(sql)
         # Execute the SQL command
+        print(sql, tuple(para))
         cursor.execute(sql, tuple(para))
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            rsc={}
-            for row in data:
-                rsc['Name'] = row[0]
-                rsc['Cost'] = row[1]
-                rsc['UnitName'] = row[2]
-                rsc['Username'] = row[3]
-                rsc['ReturnDate'] = row[4]
-                if abbrvNone!=None and number!=None and radius!=None:
-                    rsc['proximity'] = row[5]
-                else:
-                    rsc['proximity'] = None
-                result.append(copy.copy(rsc))
-        return json.dumps(result)    
-    except:
+    except Exception as e:
+        print('Search Error:', e)
+        print('formatted', sql%tuple(para))
         return "Error: unable to fetch data"
-       
+    if data is not None:
+        for row in data:
+            rsc = {}
+            rsc['ID'] = row[0]
+            rsc['Name'] = row[1]
+            rsc['Owner'] = row[2]
+            rsc['Cost'] = str(row[3])
+            rsc['UnitName'] = row[4]
+            rsc['ReturnDate'] = row[5]
+            if abbrv!=None and number!=None and radius!=None:
+                rsc['proximity'] = row[6]
+            else:
+                rsc['proximity'] = None
+            result.append(copy.copy(rsc))
+            print(rsc)
+    return json.dumps(result)
+
 @app.route("/requestResource", methods=['POST'])
 def requestResource():
     req_data = request.get_json()
@@ -338,15 +356,17 @@ def deployResource():
     rscID = req_data['resourceID']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    startDate =req_data['startDate']
-    returnDate = req_data['returnDate']
+    now = datetime.datetime.now()
+    startDate = '/'.join((now.month, now.day, now.year))
     cursor = db.cursor
-    sql_add = "INSERT INTO InUse VALUES (%d, %s, %d, %s, %s)"
+    sql_add = "INSERT INTO InUse VALUES \
+    (SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Request \
+    WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d)"
     sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
     try:
         #print(sql_add)
         # Execute the SQL command
-        cursor.execute(sql_add, (rscID, abbrv, number, startDate, returnDate))
+        cursor.execute(sql_add, (startDate, rscID, abbrv, number))
         #print(sql_del)
         # Execute the SQL command
         cursor.execute(sql_del, (rscID, abbrv, number))
@@ -397,7 +417,7 @@ def findMyRequests():
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     WHERE Incidents.Username = %s"
-    try: 
+    try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
     except:
@@ -419,12 +439,13 @@ def findMyRequests():
 def findReceivedRequests():
     username = request.args.get('username')
     cursor = db.cursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    sql = "SELECT Resource.ID, Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    LEFT JOIN (SELECT ResourceID, 'True' as status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
     WHERE Resources.Username = %s"
-    try: 
+    try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
     except:
@@ -444,60 +465,32 @@ def findReceivedRequests():
 
 
 ##################Resource Report########################
-@app.route("/totalResource")
-def totalResource():
+@app.route("/resourceReport")
+def resourceReport():
     username = request.args.get('username')
     cursor = db.sursor
-    sql = "SELECT e.Number, e.Description, count(*) as count \
-    FROM Resources r \
-    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
-    WHERE r.Username = %s \
-    GROUP BY PrimaryESFNumber"
+    sql = '''SELECT e.Number, e.Description, count(r.ID) as total, count(i.ResourceID) as inuse FROM
+    (SELECT * FROM Resources WHERE Username = %s) r
+    Right JOIN ESF e ON r.PrimaryESFNumber = e.Number
+    LEFT JOIN InUse i ON r.ID = i.ResourceID
+    GROUP BY e.Number
+    ORDER BY e.Number ASC;'''
     result = []
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                esf['count'] = row[2]
-                result.append(copy.copy(esf))
-        return json.dumps(result)    
-    except:
+    except pymysql.err.ProgrammingError:
         return "Error: unable to fetch data"
-    
-@app.route("/inuseResource")
-def inuseResource():
-    username = request.args.get('username')
-    cursor = db.cursor
-    sql = "SELECT e.Description, count(*) as count \
-    FROM Resources r \
-    JOIN ESF e ON r.PrimaryESFNumber = e.Number \
-    JOIN InUse i ON r.ResourceID = i.ResourceID \
-    WHERE r.Username = %s \
-    GROUP BY PrimaryESFNumber"
-    result = []
-    try:
-        cursor.execute(sql, (username))
-        data = cursor.fetchall()
-        if data is None:
-            result.append({'status': 'No Resources Found.'})
-        else:
-            esf={}
-            for row in data:
-                esf['Number'] = row[0]
-                esf['Description'] = row[1]
-                esf['count'] =row[2]
-                result.append(copy.copy(esf))
-        return json.dumps(result)
-    except:
-        return "Error: unable to fetch data"
-
-
+    if data is not None:
+        for row in data:
+            res = {}
+            res['Number'] = row[0]
+            res['Description'] = row[1]
+            res['total'] = row[2]
+            res['inuse'] = row[3]
+            result.append(res)
+    print(result)
+    return json.dumps(result)
 
 if __name__ == "__main__":
     app.run(debug = True, port=5000)
