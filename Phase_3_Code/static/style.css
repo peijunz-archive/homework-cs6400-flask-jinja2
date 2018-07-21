@@ -85,3 +85,9 @@ tr{
 td .btn {
     width: 6em;
 }
+
+caption {
+    caption-side: top;
+    font-size: large;
+    color: #212529;
+}

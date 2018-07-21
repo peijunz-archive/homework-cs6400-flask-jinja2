@@ -284,7 +284,7 @@ def status():
     #    total += i['total']
     #    inuse += i['inuse']
     dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
-    return render_template("status.html", inuse=[dummy], requested=[dummy], received=[dummy],
+    return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
                            **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/report.html")
