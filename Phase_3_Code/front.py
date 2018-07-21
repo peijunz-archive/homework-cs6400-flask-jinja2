@@ -275,40 +275,6 @@ def status():
     if 'username' not in session:
         return render_template("status.html", **extract(session, 'username', 'userinfo'))
 
-@app.route("/login.html", methods=['GET', 'POST'])
-def login_page():
-    print(">>> Entering login page", session)
-    if request.method == "POST":
-        F = extract(request.form)
-
-        if not(0 < len(F['username']) <= 50 and 0 < len(F['password']) <= 50):
-            print("Invalid username or password")
-        url = server + '/login?' + urlencode(F)
-        print("Sending", url)
-
-        r = requests.get(url)
-        t = json.loads(r.content)
-        if t['status'] == "success":
-            session['username'] = F['username']
-            print(session)
-            return redirect('menu.html')
-        else:
-            return "Login failed"
-    else:
-        return redirect("/login.html")
-    #url = server + '/resourceStatus?'+ urlencode({'username':session['username']})
-    #r = requests.get(url)
-    #print("Request content", r.content)
-    #t = json.loads(r.content)
-    #total = 0
-    #inuse = 0
-    #for i in t:
-    #    total += i['total']
-    #    inuse += i['inuse']
-    dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
-    return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
-                           **extract(session, 'name', 'username', 'userinfo'))
-
 
 @app.route("/report.html")
 def report():
