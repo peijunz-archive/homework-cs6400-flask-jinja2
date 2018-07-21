@@ -273,7 +273,7 @@ def results():
 def status():
     print(">>> Entering status", session)
     if 'username' not in session:
-        return redirect("/login.html")
+        return render_template("status.html", **extract(session, 'username', 'userinfo'))
     #url = server + '/resourceStatus?'+ urlencode({'username':session['username']})
     #r = requests.get(url)
     #print("Request content", r.content)
@@ -286,6 +286,7 @@ def status():
     dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
     return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
                            **extract(session, 'name', 'username', 'userinfo'))
+
 
 @app.route("/report.html")
 def report():
@@ -305,4 +306,6 @@ def report():
                            **extract(session, 'name', 'username', 'userinfo'))
 
 if __name__ == "__main__":
+
     app.run(debug=True, port=5555)
+

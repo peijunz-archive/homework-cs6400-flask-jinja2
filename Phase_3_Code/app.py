@@ -4,27 +4,34 @@ import copy
 import datetime
 
 app = Flask(__name__)
-db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
+
+
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock')
+ 
 
 @app.route("/")
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
 
-@app.route("/login", methods = ['POST','GET'])
+@app.route("/login")
 def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
+
         sql = "SELECT Name from `User` where Username=%s and Password=%s"
+
         try:
             #Execute the SQL command
             print(sql%(username, password))
             cursor.execute(sql, (username, password))
             # Fetch all the rows in a list of lists.
             data = cursor.fetchone()
+
         except pymysql.err.ProgrammingError:
             print ("Error: unable to fetch data")
             return json.dumps({'status': 'failed'})
+            
         print(data)
         return json.dumps({'status': 'success', 'name':data[0]})
 
