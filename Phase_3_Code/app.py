@@ -330,7 +330,7 @@ def deployResource():
 def findMyResources():
     username = request.args.get('username')
     cursor =  db.cursor()
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, InUse.StartDate, InUse.ReturnDate, Resources.ID \
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, InUse.StartDate, InUse.ReturnDate, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM InUse \
     INNER JOIN Resources ON InUse.ResourceID = Resources.ID \
     INNER JOIN Incidents ON InUse.Abbreviation = Incidents.Abbreviation AND InUse.Number = Incidents.Number \
@@ -355,6 +355,8 @@ def findMyResources():
             rsc['StartDate'] = row[4]
             rsc['ReturnDate'] = row[5]
             rsc['ResourceId'] = row[6]
+            rsc['IncidentAbbrv'] = row[7]
+            rsc['IncidentNumber'] = row[8]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
@@ -362,7 +364,7 @@ def findMyResources():
 def findMyRequests():
     username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, Requests.ReturnDate, Resources.ID \
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, Requests.ReturnDate, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
@@ -385,6 +387,8 @@ def findMyRequests():
             rsc['OwnerName'] = row[3]
             rsc['ReturnDate'] = row[4]
             rsc['ResourceID'] = row[5]
+            rsc['IncidentAbbrv'] = row[6]
+            rsc['IncidentNumber'] = row[7]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
@@ -392,7 +396,7 @@ def findMyRequests():
 def findReceivedRequests():
     username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID \
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID, Incidents.Abbreviation, Incidents.Number \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
@@ -417,8 +421,55 @@ def findReceivedRequests():
             rsc['ReturnDate'] = row[3]
             rsc['IncidentOwnerName'] = row[4]
             rsc['ResourceId'] = row[5]
+            rsc['IncidentAbbrv'] = row[6]
+            rsc['IncidentNumber'] = row[7]
             result.append(copy.copy(rsc))
     return json.dumps(result)
+
+@app.route("/deleteRequest", methods = ['POST'])
+def deleteRequest():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    cursor = db.cursor()
+    sql_del = "DELETE FROM Requests WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    try:
+        # Execute the SQL command
+        cursor.execute(sql_del, (rscID, abbrv, number))
+        # Commit your changes in the database
+        db.commit()
+        return json.dumps({'status': 'success'})
+    except Exception as ex:
+        # Rollback in case there is any error
+        db.rollback()
+        print(ex)
+        return json.dumps({'status': 'failed'})
+
+@app.route("/returnResource", methods = ['POST'])
+def returnResource():
+    req_data = request.get_json()
+    print(req_data)
+    rscID = req_data['resourceID']
+    abbrv = req_data['abbreviation']
+    number = req_data['number']
+    cursor = db.cursor()
+    sql = "REPLACE into LastUsed (ResourceID, Abbreviation, Number) VALUES (%s, %s, %s)"
+    sqlDel = "DELETE FROM InUse WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    try:
+        # Execute the SQL command
+        cursor.execute(sql, (rscID, abbrv, number))
+        # Execute the SQL command
+        cursor.execute(sqlDel, (rscID, abbrv, number))
+        # Commit your changes in the database
+        db.commit()
+        return json.dumps({'status': 'success'})
+    except Exception as ex:
+        # Rollback in case there is any error
+        db.rollback()
+        print(ex)
+        return json.dumps({'status': 'failed'})
 
 
 ##################Resource Report########################

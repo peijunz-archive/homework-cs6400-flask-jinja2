@@ -217,7 +217,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	http://127.0.0.1:5000/findMyResources?username=gov      
 	Sample result:
 	```
-	[{"IncDes": "test2", "OwnerName": "Government", "ResourceID": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
+	[{"IncDes": "test2", "OwnerName": "Government", "ResourceId": 3, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource1", "RscUsername": "gov", "StartDate": "Sat, 21 Jul 2018 00:00:00 GMT"}]
 	```
 
 - Get Resources Requested by Me   
@@ -230,5 +230,29 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	http://127.0.0.1:5000/findReceivedRequests?username=gov   
 	Sample result:
 	```
-	[{"IncDes": "test2", "IncidentOwnerName": "Government", "ResourceId": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
+	[{"IncDes": "test2", "IncidentAbbrv": "ED", "IncidentNumber": 3, "IncidentOwnerName": "Government", "ResourceId": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
 	```
+
+- Delete Request/Reject Request/Cancel Request   
+	POST to /deleteRequest   
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3
+	}
+	```
+	Sample result: `{"status": "success"}`
+
+- Return Resource   
+	POST to /returnResource   
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3
+	}
+	```
+	Sample result: `{"status": "success"}`
