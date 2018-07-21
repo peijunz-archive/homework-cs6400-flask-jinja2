@@ -244,6 +244,15 @@ def search():
     getIncidents()
     return render_template("search.html", **extract(session, 'name', 'username', 'userinfo', 'ESF', 'incidents'))
 
+@app.route("/action", methods=['POST'])
+def process_action():
+    '''example: id=6&deploy=1'''
+    print(">>> Entering results", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    F = extract(request.form)
+
+
 @app.route("/results.html", methods=['POST'])
 def results():
     print(">>> Entering results", session)
@@ -253,11 +262,13 @@ def results():
     F['keyword'] = request.form.get('keyword', '')
     F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
     F['radius'] = parseObj(request.form.get('radius', None))
-    incident =parseIncident(request.form.get('incident', ''))
-    if incident is not None:
-        F.update(incident)
+    session['incident'] = parseIncident(request.form.get('incident', ''))
+    if session['incident'] is not None:
+        F.update(session['incident'])
         incident = request.form.get('incident', '').split()
         incident = ' '.join(incident[1:]+incident[:1])
+    else:
+        incident = None
     url = server+'/searchResults'
     print("Requesting", url, F)
     r = requests.post(url, json=F)

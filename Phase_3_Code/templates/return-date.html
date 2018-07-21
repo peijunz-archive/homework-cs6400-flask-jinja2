@@ -3,13 +3,13 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="requestModalLabel">Resource Request</h5>
+                <h5 class="modal-title" id="requestModalLabel">[Act] Resource</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id='request'>
                     <div class="form-group">
                         <label class="col-form-label">Incident</label>
                         <div class="info-col" id="incident"></div>
@@ -20,13 +20,13 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Expected Return Date</label>
-                        <input name="returnDate" type="date" class="form-control" min='1990-01-01' required>
+                        <input id='returnDate' name="returnDate" type="date" class="form-control" min='1990-01-01' required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="send">Send</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Send</button>
             </div>
         </div>
     </div>
@@ -36,12 +36,26 @@
     $('#requestModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
         var id = button.data('id');// Extract info from data-* attributes
+        var act = button.text();
         // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
         // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
         var modal = $(this);
         var incident = $(".incidentName").text();
-        console.log(incident);
         modal.find('#resourceID').text(id);
+        modal.find('#requestModalLabel').text(act+'Resource');
+        modal.find('#send').text(act);
         modal.find('#incident').text(incident)
-    })
+    });
+    $('#request').on("submit", function() {
+    var id = $('#resourceID').text();
+    var incident = $('#incident').text();
+    var action = $('#send').text();
+        console.log("Send data");
+        $.post('action', { id : id, incident: incident, action : action }, function(){
+        $('.success_msg').append("Vote Successfully Recorded");
+            $('.success_msg').fadeOut();
+        });
+
+        return false;}
+     );
 </script>
