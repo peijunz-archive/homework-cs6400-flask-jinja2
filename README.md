@@ -159,7 +159,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	If any field is None or empty string, then it is ignored. Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched or set it to None from POST json payload.
 	If it is searching by location, radius, abbreviation and number are required. 
 	
-	The result is a list of resources, every is a resource with keys:
+	The result is a list of resources, every resource is a dict with keys:
 	```
 	ID, Name, Owner, Cost, UnitName, Date, [proximity, Own]
 	```
