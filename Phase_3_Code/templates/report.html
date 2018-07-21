@@ -9,7 +9,8 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table id="report" class="table table-hover table-striped">
+
                 <thead class="thead-light">
                 <tr>
                     <th scope="col">ESF#</th>
@@ -18,24 +19,27 @@
                     <th scope="col">Resources In Use</th>
                 </tr>
                 </thead>
-                <tfoot>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Total</th>
-                    <th scope="col">{{ total }}</th>
-                    <th scope="col">{{ inuse }}</th>
-                </tr>
-                </tfoot>
+                
                 <tbody>
                 {% for it in result %}
                 <tr>
-                    <td scope="col">{{ it.Number }}</td>
-                    <td scope="col">{{ it.Description }}</td>
-                    <td scope="col">{{ it.total }}</td>
-                    <td scope="col">{{ it.inuse }}</td>
+                    <th scope="row">{{ it.Number }}</td>
+                    <td>{{ it.Description }}</td>
+                    <td>{{ it.total }}</td>
+                    <td>{{ it.inuse }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
+
+                <tfoot>
+                <tr>
+                    <th></th>
+                    <th>Total</th>
+                    <th>{{ total }}</th>
+                    <th>{{ inuse }}</th>
+                </tr>
+                </tfoot>
+
             </table>
         </div>
     </div>
