@@ -212,3 +212,23 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	```
 	Sample Result: 
 	`{"status": "success"}`
+
+- Get Resources In Use   
+	http://127.0.0.1:5000/findMyResources?username=gov      
+	Sample result:
+	```
+	[{"IncDes": "test2", "OwnerName": "Government", "ResourceID": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
+	```
+
+- Get Resources Requested by Me   
+	http://127.0.0.1:5000/findMyRequests?username=gov   
+	Sample result:
+	```
+	[{"IncDes": "test2", "OwnerName": "Government", "ResourceID": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
+	```
+- Get Resource Requests Received by Me   
+	http://127.0.0.1:5000/findReceivedRequests?username=gov   
+	Sample result:
+	```
+	[{"IncDes": "test2", "IncidentOwnerName": "Government", "ResourceId": 4, "ReturnDate": "Tue, 21 Aug 2018 00:00:00 GMT", "RscName": "resource2", "RscUsername": "gov"}]
+	```
