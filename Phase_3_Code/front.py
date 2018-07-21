@@ -273,7 +273,7 @@ def results():
 def status():
     print(">>> Entering status", session)
     if 'username' not in session:
-        return render_template("status.html", **extract(session, 'username', 'userinfo'))
+        return redirect("/login.html")
 
 
 @app.route("/report.html")
