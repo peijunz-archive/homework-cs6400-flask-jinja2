@@ -1,3 +1,43 @@
 {% extends "base.html" %}
 
 {% block title %}Resource Report{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h4 class="panel-title">Resource Report by Primary Emergency Support Function</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">ESF#</th>
+                    <th scope="col">Primary Emergency Support Function</th>
+                    <th scope="col">Total Resources</th>
+                    <th scope="col">Resources In Use</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Total</th>
+                    <th scope="col">{{ total }}</th>
+                    <th scope="col">{{ inuse }}</th>
+                </tr>
+                </tfoot>
+                <tbody>
+                {% for it in result %}
+                <tr>
+                    <td scope="col">{{ it.Number }}</td>
+                    <td scope="col">{{ it.Description }}</td>
+                    <td scope="col">{{ it.total }}</td>
+                    <td scope="col">{{ it.inuse }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

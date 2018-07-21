@@ -2,6 +2,7 @@ from flask import Flask,request,jsonify,json,render_template,redirect,session
 from ast import literal_eval
 import requests
 from urllib.parse import urlencode
+import datetime
 
 app = Flask(__name__)
 
@@ -262,6 +263,9 @@ def results():
     r = requests.post(url, json=F)
     print('Result content', r.content)
     result = json.loads(r.content)
+    for i in result:
+        if i['ReturnDate']:
+            i['ReturnDate'] = datetime.date(*i['ReturnDate'])
     return render_template("results.html", resources=result, incident=incident,
                            **extract(session, 'name', 'username', 'userinfo'))
 
@@ -278,8 +282,17 @@ def report():
     print(">>> Entering report", session)
     if 'username' not in session:
         return redirect("/login.html")
-    # TODO
-    return render_template("report.html", **extract(session, 'name', 'username', 'userinfo'))
+    url = server + '/resourceReport?'+ urlencode({'username':session['username']})
+    r = requests.get(url)
+    print("Request content", r.content)
+    t = json.loads(r.content)
+    total = 0
+    inuse = 0
+    for i in t:
+        total += i['total']
+        inuse += i['inuse']
+    return render_template("report.html", total=total, inuse=inuse, result=t,
+                           **extract(session, 'name', 'username', 'userinfo'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5555)

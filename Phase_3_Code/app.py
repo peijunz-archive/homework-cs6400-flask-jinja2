@@ -263,7 +263,7 @@ def searchResults():
             rsc['Owner'] = row[2]
             rsc['Cost'] = float(row[3])
             rsc['UnitName'] = row[4]
-            rsc['ReturnDate'] = row[5]
+            rsc['ReturnDate'] = None if row[5] is None else row[5].isocalendar()
             if len(row)>6:
                 rsc['proximity'] = row[6]
                 rsc['Own'] = row[7]
@@ -413,13 +413,14 @@ def findReceivedRequests():
 @app.route("/resourceReport")
 def resourceReport():
     username = request.args.get('username')
-    cursor = db.sursor
+    cursor = db.cursor()
     sql = '''SELECT e.Number, e.Description, count(r.ID) as total, count(i.ResourceID) as inuse FROM
     (SELECT * FROM Resources WHERE Username = %s) r
     Right JOIN ESF e ON r.PrimaryESFNumber = e.Number
     LEFT JOIN InUse i ON r.ID = i.ResourceID
     GROUP BY e.Number
     ORDER BY e.Number ASC;'''
+    result = []
     result = []
     try:
         cursor.execute(sql, (username))
