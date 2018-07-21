@@ -14,7 +14,7 @@ Usable = '''NOT EXISTS
 Incident = 'JOIN (SELECT * FROM Incidents WHERE Abbreviation = %s AND Number = %s) ic'
 def sql_string(keyword="", ESFNumber=None, radius=None, abbreviation=None, number=None):
     # Set basic cols, Tables and conditions
-    cols = ['r.ID', 'r.Name', 'u.Name as Owner', 'r.Cost', 'r.UnitName', 'i.ReturnDate']
+    cols = ['r.ID', 'r.Name', 'u.Name as Owner', 'r.Cost', 'r.UnitName', 'CAST(i.ReturnDate AS DATE)']
     tables = ['Resources r JOIN User u ON u.Username=r.Username',
               'LEFT JOIN InUse i ON r.ID = i.ResourceID']
     conditions = []
