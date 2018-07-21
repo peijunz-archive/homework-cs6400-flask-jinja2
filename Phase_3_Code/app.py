@@ -6,8 +6,7 @@ import datetime
 app = Flask(__name__)
 
 
-db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock')
- 
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
 
 @app.route("/")
 def index():
@@ -31,7 +30,7 @@ def login():
         except pymysql.err.ProgrammingError:
             print ("Error: unable to fetch data")
             return json.dumps({'status': 'failed'})
-            
+
         print(data)
         return json.dumps({'status': 'success', 'name':data[0]})
 
