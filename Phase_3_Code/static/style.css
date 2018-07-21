@@ -77,7 +77,7 @@ form label {
     font-weight: bold;
 }
 .table td{
-    vertical-align: text-bottom;
+    text-align: center;
 }
 tr{
     text-align: center;
@@ -85,6 +85,7 @@ tr{
 td .btn {
     width: 6em;
 }
+
 
 caption {
     caption-side: top;

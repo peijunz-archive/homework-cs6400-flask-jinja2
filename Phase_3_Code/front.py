@@ -287,6 +287,7 @@ def status():
     return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
                            **extract(session, 'name', 'username', 'userinfo'))
 
+
 @app.route("/report.html")
 def report():
     print(">>> Entering report", session)
@@ -305,4 +306,6 @@ def report():
                            **extract(session, 'name', 'username', 'userinfo'))
 
 if __name__ == "__main__":
+
     app.run(debug=True, port=5555)
+
