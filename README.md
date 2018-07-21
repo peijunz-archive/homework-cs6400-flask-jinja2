@@ -143,3 +143,72 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
     {"Number":3, "Description":"Public works and Engeering", "total":8, "inuse":7},
     ]
     ```
+
+- Search Resources   
+	POST to /searchResults   
+	Searching by all fields:
+	```
+	{
+		"keyword": "resource",
+		"ESFNumber": 6,
+		"radius": 10,
+		"abbreviation": "ED",
+		"number": "2"
+	}
+	```
+	If any field is None or empty string, then it is ignored. Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched or set it to None from POST json payload.
+	If it is searching by location, radius, abbreviation and number are required. 
+	
+	The result is a list of resources, every is a resource with keys:
+	```
+	ID, Name, Owner, Cost, UnitName, Date, [proximity, Own]
+	```
+	The proximity and Own only exists when an incident is specified. 	`Own` is a boolean value that is True only if the resource belongs to the __owner of current incident__.
+
+	Sample result if incident is specified:
+	```
+	[
+	{'ID': 17, 'Name': 'Life', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': None, 'proximity': 785.7672208422604, 'Own': 1},
+	{'ID': 1, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None, 'proximity': 867.808561372758, 'Own': 0},
+	{'ID': 2, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None, 'proximity': 867.808561372758, 'Own': 0},
+	{'ID': 16, 'Name': 'ChewingGum', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': (2022, 8, 2), 'proximity': 5212.274847227833, 'Own': 1}
+	]
+	```
+
+	Sample result if incident is NOT specified:
+	```
+	[
+	{'ID': 17, 'Name': 'Life', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': None},
+	{'ID': 1, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None},
+	{'ID': 2, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None},
+	{'ID': 16, 'Name': 'ChewingGum', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': (2022, 8, 2)}
+	]
+	```
+
+- Request Resource   
+	POST to /requestResource
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3,
+		"requestDate": "2018-7-21",
+		"returnDate": "2018-8-21"
+	}
+	```
+	Sample Result:
+	`{"status": "success"}`
+
+- Deploy Resource   
+	POST to /deployResource
+	Sample JSON body:
+	```
+	{
+		"resourceID": 3,
+		"abbreviation": "ED",
+		"number": 3
+	}
+	```
+	Sample Result: 
+	`{"status": "success"}`

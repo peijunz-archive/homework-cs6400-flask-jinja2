@@ -279,37 +279,37 @@ def requestResource():
     abbrv = req_data['abbreviation']
     number = req_data['number']
     requestDate = req_data['requestDate']
-    returnDate = req_data['returnDate']
-    cursor = db.cursor
-    sql = "INSERT INTO `Requests` VALUES (%d, %s, %d, %s, %s)"
+    returnDate = req_data['returnDate'].strftime('%Y-%m-%d')
+    cursor = db.cursor()
+    sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"
     try:
-        #print(sql)
         # Execute the SQL command
         cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
         # Commit your changes in the database
         db.commit()
         return json.dumps({'status': 'success'})
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return json.dumps({'status': 'failed'})
 
-@app.route("/deployResource", methods = ['POST', 'DELETE'])
+
+@app.route("/deployResource", methods = ['POST'])
 def deployResource():
     req_data = request.get_json()
     print(req_data)
     rscID = req_data['resourceID']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    now = datetime.datetime.now()
-    startDate = '/'.join((now.month, now.day, now.year))
-    cursor = db.cursor
-    sql_add = "INSERT INTO InUse VALUES \
-    (SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Request \
-    WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d)"
-    sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
+    startDate = datetime.datetime.now().strftime('%Y-%m-%d')
+    cursor = db.cursor()
+    sql_add = "INSERT INTO InUse \
+    SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Requests \
+    WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    sql_del = "DELETE FROM Requests WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
     try:
-        #print(sql_add)
+        print(sql_add)
         # Execute the SQL command
         cursor.execute(sql_add, (startDate, rscID, abbrv, number))
         #print(sql_del)
@@ -318,9 +318,10 @@ def deployResource():
         # Commit your changes in the database
         db.commit()
         return json.dumps({'status': 'success'})
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return json.dumps({'status': 'failed'})
 
 
