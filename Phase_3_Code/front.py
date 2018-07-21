@@ -44,10 +44,10 @@ def parseIncident(s):
         s = s.split()[0].lstrip('(').strip(')').split('-')
         number = parseObj(s[1])
         if isinstance(number, int):
-            return s[0], number
+            return {"abbreviation":s[0], "number": number}
     except Exception as e:
         print(e)
-    return None, None
+    return None
 
 '''Caching ESF TimeUnit Incidents and nextResourceID'''
 def getESF():
@@ -252,13 +252,17 @@ def results():
     F['keyword'] = request.form.get('keyword', '')
     F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
     F['radius'] = parseObj(request.form.get('radius', None))
-    F['abbreviation'], F['number'] =parseIncident(request.form.get('incident', ''))
+    incident =parseIncident(request.form.get('incident', ''))
+    if incident is not None:
+        F.update(incident)
+        incident = request.form.get('incident', '').split()
+        incident = ' '.join(incident[1:]+incident[:1])
     url = server+'/searchResults'
     print("Requesting", url, F)
     r = requests.post(url, json=F)
     print('Result content', r.content)
     result = json.loads(r.content)
-    return render_template("results.html", resources=result,
+    return render_template("results.html", resources=result, incident=incident,
                            **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/status.html")

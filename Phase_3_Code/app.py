@@ -238,58 +238,22 @@ def getIncidentsForUser():
         result.append(incident)
     return json.dumps(result)
 
+from search import sql_string, sql_format
 @app.route("/searchResults", methods=['POST'])
 def searchResults():
     req_data = request.get_json()
     print(req_data)
-    keyword = req_data['keyword']
-    ESFNumber = req_data['ESFNumber']
-    radius = req_data['radius']
-    abbrv = req_data['abbreviation']
-    number = req_data['number']
-    cursor = db.cursor()
-
-    if keyword==None:
-        keyword = ''
-    keyword = '%{}%'.format(keyword)
-    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate",
-              "FROM Resources r",
-              "LEFT JOIN InUse i ON r.ID = i.ResourceID",
-              "WHERE r.Name like %s"]
-    if ESFNumber!=None:
-        pieces.append('''AND (r.PrimaryESFNumber = %s
-        OR %s IN (SELECT ESFNumber FROM AdditionalESF ad
-        WHERE ad.ResourceID = r.ID))'''
-                      )
-    if abbrv!=None and number!=None and radius!=None:
-        pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
-         * COS(RADIANS(ic.Latitude)) \
-         * COS(RADIANS(r.Longitude - ic.Longitude)) \
-         + SIN(RADIANS(r.Latitude)) \
-         * SIN(RADIANS(ic.Latitude))) AS proximity")
-        pieces.insert(3, "JOIN Incidents ic")
-        pieces.append("AND ic.Abbreviation = %s \
-        AND ic.Number = %s \
-        HAVING proximity < %s \
-        ORDER BY proximity")
-    sql = '\n'.join((string for string in pieces))
-
-    para=[keyword]
-    if ESFNumber!=None:
-        para += [ESFNumber, ESFNumber]
-    if abbrv!=None and number!=None and radius!=None:
-        para += [abbrv, number, radius]
-
+    sql, args = sql_string(**req_data)
     result = []
+    cursor = db.cursor()
     try:
-        #print(sql)
         # Execute the SQL command
-        print(sql, tuple(para))
-        cursor.execute(sql, tuple(para))
+        print(sql, args)
+        cursor.execute(sql, args)
         data = cursor.fetchall()
     except Exception as e:
         print('Search Error:', e)
-        print('formatted', sql%tuple(para))
+        print("Query String\n", sql_format(sql, args))
         return "Error: unable to fetch data"
     if data is not None:
         for row in data:
@@ -297,14 +261,13 @@ def searchResults():
             rsc['ID'] = row[0]
             rsc['Name'] = row[1]
             rsc['Owner'] = row[2]
-            rsc['Cost'] = str(row[3])
+            rsc['Cost'] = float(row[3])
             rsc['UnitName'] = row[4]
             rsc['ReturnDate'] = row[5]
-            if abbrv!=None and number!=None and radius!=None:
+            if len(row)>6:
                 rsc['proximity'] = row[6]
-            else:
-                rsc['proximity'] = None
-            result.append(copy.copy(rsc))
+                rsc['Own'] = row[7]
+            result.append(rsc)
             print(rsc)
     return json.dumps(result)
 
