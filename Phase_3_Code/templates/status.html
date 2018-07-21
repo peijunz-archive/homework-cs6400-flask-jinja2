@@ -25,13 +25,13 @@
                 <tbody>
                 {% for it in inuse %}
                 <tr>
-                    <td scope="col">{{ it.ID }}</td>
-                    <td scope="col">{{ it.Name }}</td>
-                    <td scope="col">{{ it.incident }}</td>
-                    <td scope="col">{{ it.owner }}</td>
-                    <td scope="col">{{ it.startDate }}</td>
-                    <td scope="col">{{ it.returnDate }}</td>
-                    <td scope="col">action here</td>
+                    <td scope="row">{{ it.ID }}</td>
+                    <td>{{ it.Name }}</td>
+                    <td>{{ it.incident }}</td>
+                    <td>{{ it.owner }}</td>
+                    <td>{{ it.startDate }}</td>
+                    <td>{{ it.returnDate }}</td>
+                    <td>action here</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -51,12 +51,12 @@
                 <tbody>
                 {% for it in requested %}
                 <tr>
-                    <td scope="col">{{ it.ID }}</td>
-                    <td scope="col">{{ it.Name }}</td>
-                    <td scope="col">{{ it.incident }}</td>
-                    <td scope="col">{{ it.owner }}</td>
-                    <td scope="col">{{ it.returnDate }}</td>
-                    <td scope="col">action here</td>
+                    <td scope="row">{{ it.ID }}</td>
+                    <td>{{ it.Name }}</td>
+                    <td>{{ it.incident }}</td>
+                    <td>{{ it.owner }}</td>
+                    <td>{{ it.returnDate }}</td>
+                    <td>action here</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -76,12 +76,12 @@
                 <tbody>
                 {% for it in received %}
                 <tr>
-                    <td scope="col">{{ it.ID }}</td>
-                    <td scope="col">{{ it.Name }}</td>
-                    <td scope="col">{{ it.incident }}</td>
-                    <td scope="col">{{ it.owner }}</td>
-                    <td scope="col">{{ it.returnDate }}</td>
-                    <td scope="col">action here</td>
+                    <td scope="row">{{ it.ID }}</td>
+                    <td>{{ it.Name }}</td>
+                    <td>{{ it.incident }}</td>
+                    <td>{{ it.owner }}</td>
+                    <td>{{ it.returnDate }}</td>
+                    <td>action here</td>
                 </tr>
                 {% endfor %}
                 </tbody>
