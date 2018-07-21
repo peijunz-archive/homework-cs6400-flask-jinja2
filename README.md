@@ -156,27 +156,38 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"number": "2"
 	}
 	```
+<<<<<<< HEAD
 	OR searching by keyword and location:
-	```
-	{
-		"keyword": "resource",
-		"radius": 10,
-		"abbreviation": "ED",
-		"number": 2
-	}
-	```
-	Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched from POST json payload.   
+=======
+	If any field is None or empty string, then it is ignored. Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched or set it to None from POST json payload.
 	If it is searching by location, radius, abbreviation and number are required. 
-	Sample result:   
+	
+	The result is a list of resources, every resource is a dict with keys:
+	```
+	ID, Name, Owner, Cost, UnitName, Date, [proximity, Own]
+	```
+	The proximity and Own only exists when an incident is specified. 	`Own` is a boolean value that is True only if the resource belongs to the __owner of current incident__.
+
+	Sample result if incident is specified:
+>>>>>>> 21f1669a55b23b72ca409d51e1eb0d4e10638def
 	```
 	[
-		{"Cost": "100", "ID": 3, "Name": "resource1", "Owner": "Government", "ReturnDate": "Mon, 10 Sep 2018 00:00:00 GMT", "Status": "3", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
-		{"Cost": "100", "ID": 4, "Name": "resource2", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
-		{"Cost": "100", "ID": 5, "Name": "resource3", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}, 
-		{"Cost": "100", "ID": 6, "Name": "resource4", "Owner": "Government", "ReturnDate": null, "Status": "Available", "UnitName": "Hour", "proximity": 9.493529796600342e-05}
+	{'ID': 17, 'Name': 'Life', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': None, 'proximity': 785.7672208422604, 'Own': 1},
+	{'ID': 1, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None, 'proximity': 867.808561372758, 'Own': 0},
+	{'ID': 2, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None, 'proximity': 867.808561372758, 'Own': 0},
+	{'ID': 16, 'Name': 'ChewingGum', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': (2022, 8, 2), 'proximity': 5212.274847227833, 'Own': 1}
 	]
 	```
-	Notice that if `Status` has a number, it is not available.
+
+	Sample result if incident is NOT specified:
+	```
+	[
+	{'ID': 17, 'Name': 'Life', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': None},
+	{'ID': 1, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None},
+	{'ID': 2, 'Name': 'name', 'Owner': 'Zemin Jiang', 'Cost': 0.0, 'UnitName': 'Day', 'ReturnDate': None},
+	{'ID': 16, 'Name': 'ChewingGum', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': (2022, 8, 2)}
+	]
+	```
 
 - Request Resource   
 	POST to /requestResource   

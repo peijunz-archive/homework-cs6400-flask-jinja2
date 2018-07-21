@@ -39,21 +39,26 @@
                 <td scope="col">{{ "$%.2f/%s" %(it.Cost, it.UnitName) }}</td>
                 <td scope="col">{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
                 <td scope="col">
-                    {% if it.ReturnDate %}
-                        {{it.ReturnDate.strftime('%Y-%m-%d')}}
-                    {% else %}
-                        NOW
-                    {% endif %}</td>
+                {% if it.ReturnDate %}
+                    {{it.ReturnDate.strftime('%Y-%m-%d')}}
+                {% else %}
+                    NOW
+                {% endif %}
+                </td>
                 {% if incident %}
                 <td scope="col">{{ "%.2f" % it.proximity }}</td>
                 <td scope="col">
-                    <a class="btn btn-secondary" href="results.html?request={{it.ID}}">
-                    {% if it.Own and not it.ReturnDate %}
-                        Deploy
+                {% if it.Own and it.ReturnDate %}
+                    Deployed
+                {% else %}
+                    <a class="btn btn-secondary" href="?request={{it.ID}}">
+                    {% if it.Own %}
+                    Deploy
                     {% else %}
-                        Request
+                    Request
                     {% endif %}
                     </a>
+                {% endif %}
                 </td>
                 {% endif %}
             </tr>
