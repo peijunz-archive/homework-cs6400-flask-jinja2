@@ -156,9 +156,6 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"number": "2"
 	}
 	```
-<<<<<<< HEAD
-	OR searching by keyword and location:
-=======
 	If any field is None or empty string, then it is ignored. Searching by just by ESFNumber or by keyword and ESFNumber are supported as well. Just need to remove fields not being searched or set it to None from POST json payload.
 	If it is searching by location, radius, abbreviation and number are required. 
 	
@@ -169,7 +166,6 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	The proximity and Own only exists when an incident is specified. 	`Own` is a boolean value that is True only if the resource belongs to the __owner of current incident__.
 
 	Sample result if incident is specified:
->>>>>>> 21f1669a55b23b72ca409d51e1eb0d4e10638def
 	```
 	[
 	{'ID': 17, 'Name': 'Life', 'Owner': 'Boy in Red', 'Cost': 1.0, 'UnitName': 'Each', 'ReturnDate': None, 'proximity': 785.7672208422604, 'Own': 1},
