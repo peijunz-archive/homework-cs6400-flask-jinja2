@@ -33,12 +33,12 @@
             <tbody>
             {% for it in resources %}
             <tr>
-                <td scope="col">{{ it.ID }}</td>
-                <td scope="col">{{ it.Name }}</td>
-                <td scope="col">{{ it.Owner }}</td>
-                <td scope="col">{{ "$%.2f/%s" %(it.Cost, it.UnitName) }}</td>
-                <td scope="col">{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
-                <td scope="col">
+                <td scope="row">{{ it.ID }}</td>
+                <td>{{ it.Name }}</td>
+                <td>{{ it.Owner }}</td>
+                <td>{{ "$%.2f/%s" %(it.Cost, it.UnitName) }}</td>
+                <td>{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
+                <td>
                 {% if it.ReturnDate %}
                     {{it.ReturnDate.strftime('%Y-%m-%d')}}
                 {% else %}
@@ -46,8 +46,8 @@
                 {% endif %}
                 </td>
                 {% if incident %}
-                <td scope="col">{{ "%.2f" % it.proximity }}</td>
-                <td scope="col">
+                <td>{{ "%.2f" % it.proximity }}</td>
+                <td>
                 {% if it.Own and it.ReturnDate %}
                     Deployed
                 {% else %}
