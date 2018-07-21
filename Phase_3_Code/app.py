@@ -270,6 +270,7 @@ def searchResults():
         pieces.insert(3, "JOIN Incidents ic")
         pieces.append("AND ic.Abbreviation = %s \
         AND ic.Number = %s \
+        AND r.ID NOT IN (SELECT ResourceID FROM LastUsed WHERE Abbreviation = %s AND Number = %s) \
         HAVING proximity < %s \
         ORDER BY proximity")
     sql = '\n'.join((string for string in pieces))
@@ -278,7 +279,7 @@ def searchResults():
     if ESFNumber!=None:
         para += [ESFNumber, ESFNumber]
     if abbrv!=None and number!=None and radius!=None:
-        para += [abbrv, number, radius]
+        para += [abbrv, number, abbrv, number, radius]
 
     result = []
     try:
@@ -317,7 +318,7 @@ def requestResource():
     abbrv = req_data['abbreviation']
     number = req_data['number']
     requestDate = req_data['requestDate']
-    returnDate = req_data['returnDate']
+    returnDate = req_data['returnDate'].strftime('%Y-%m-%d')
     cursor = db.cursor()
     sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"
     try:
@@ -333,7 +334,7 @@ def requestResource():
         return json.dumps({'status': 'failed'})
 
 
-@app.route("/deployResource", methods = ['POST', 'DELETE'])
+@app.route("/deployResource", methods = ['POST'])
 def deployResource():
     req_data = request.get_json()
     print(req_data)
