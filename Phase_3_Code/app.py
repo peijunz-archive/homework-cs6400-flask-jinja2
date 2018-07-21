@@ -248,19 +248,19 @@ def getIncidentsForUser():
 @app.route("/searchResults", methods=['POST'])
 def searchResults():
     req_data = request.get_json()
-    print(req_data)
-    keyword = req_data['keyword']
-    ESFNumber = req_data['ESFNumber']
-    radius = req_data['radius']
-    abbrv = req_data['abbreviation']
-    number = req_data['number']
+    # print(req_data)
+    keyword = req_data['keyword'] if 'keyword' in req_data else None
+    ESFNumber = req_data['ESFNumber']  if 'ESFNumber' in req_data else None
+    radius = req_data['radius']  if 'radius' in req_data else None
+    abbrv = req_data['abbreviation']  if 'abbreviation' in req_data else None
+    number = req_data['number']  if 'number' in req_data else None
     cursor = db.cursor()
-
+    # print(keyword, ESFNumber, radius, abbrv, number)
     if keyword==None:
         keyword = ''
     keyword = '%{}%'.format(keyword)
-    pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate",
-              "FROM Resources r",
+    pieces = ["SELECT r.ID, r.Name as ResourceName, u.Name as OwnerName, r.Cost, r.UnitName, i.ReturnDate, COALESCE(i.ResourceID, 'Available') AS Status ",
+              "FROM Resources r JOIN User u ON r.Username = u.Username",
               "LEFT JOIN InUse i ON r.ID = i.ResourceID",
               "WHERE r.Name like %s"]
     if ESFNumber!=None:
@@ -277,6 +277,7 @@ def searchResults():
         pieces.insert(3, "JOIN Incidents ic")
         pieces.append("AND ic.Abbreviation = %s \
         AND ic.Number = %s \
+        AND r.ID NOT IN (SELECT ResourceID FROM LastUsed WHERE Abbreviation = %s AND Number = %s) \
         HAVING proximity < %s \
         ORDER BY proximity")
     sql = '\n'.join((string for string in pieces))
@@ -285,7 +286,7 @@ def searchResults():
     if ESFNumber!=None:
         para += [ESFNumber, ESFNumber]
     if abbrv!=None and number!=None and radius!=None:
-        para += [abbrv, number, radius]
+        para += [abbrv, number, abbrv, number, radius]
 
     result = []
     try:
@@ -307,8 +308,9 @@ def searchResults():
             rsc['Cost'] = str(row[3])
             rsc['UnitName'] = row[4]
             rsc['ReturnDate'] = row[5]
+            rsc['Status'] = row[6]
             if abbrv!=None and number!=None and radius!=None:
-                rsc['proximity'] = row[6]
+                rsc['proximity'] = row[7]
             else:
                 rsc['proximity'] = None
             result.append(copy.copy(rsc))
@@ -323,37 +325,37 @@ def requestResource():
     abbrv = req_data['abbreviation']
     number = req_data['number']
     requestDate = req_data['requestDate']
-    returnDate = req_data['returnDate']
-    cursor = db.cursor
-    sql = "INSERT INTO `Requests` VALUES (%d, %s, %d, %s, %s)"
+    returnDate = req_data['returnDate'].strftime('%Y-%m-%d')
+    cursor = db.cursor()
+    sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"
     try:
-        #print(sql)
         # Execute the SQL command
         cursor.execute(sql, (rscID, abbrv, number, requestDate, returnDate))
         # Commit your changes in the database
         db.commit()
         return json.dumps({'status': 'success'})
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return json.dumps({'status': 'failed'})
 
-@app.route("/deployResource", methods = ['POST', 'DELETE'])
+
+@app.route("/deployResource", methods = ['POST'])
 def deployResource():
     req_data = request.get_json()
     print(req_data)
     rscID = req_data['resourceID']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    now = datetime.datetime.now()
-    startDate = '/'.join((now.month, now.day, now.year))
-    cursor = db.cursor
-    sql_add = "INSERT INTO InUse VALUES \
-    (SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Request \
-    WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d)"
-    sql_del = "DELETE FROM Requests WHERE ResourceID = %d AND Abbreviation = %s AND Number = %d"
+    startDate = datetime.datetime.now().strftime('%Y-%m-%d')
+    cursor = db.cursor()
+    sql_add = "INSERT INTO InUse \
+    SELECT ResourceID, Abbreviation, Number, %s, ReturnDate from Requests \
+    WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
+    sql_del = "DELETE FROM Requests WHERE ResourceID = %s AND Abbreviation = %s AND Number = %s"
     try:
-        #print(sql_add)
+        print(sql_add)
         # Execute the SQL command
         cursor.execute(sql_add, (startDate, rscID, abbrv, number))
         #print(sql_del)
@@ -362,9 +364,10 @@ def deployResource():
         # Commit your changes in the database
         db.commit()
         return json.dumps({'status': 'success'})
-    except:
+    except Exception as ex:
         # Rollback in case there is any error
         db.rollback()
+        print(ex)
         return json.dumps({'status': 'failed'})
 
 
@@ -457,13 +460,14 @@ def findReceivedRequests():
 @app.route("/resourceReport")
 def resourceReport():
     username = request.args.get('username')
-    cursor = db.sursor
+    cursor = db.cursor()
     sql = '''SELECT e.Number, e.Description, count(r.ID) as total, count(i.ResourceID) as inuse FROM
     (SELECT * FROM Resources WHERE Username = %s) r
     Right JOIN ESF e ON r.PrimaryESFNumber = e.Number
     LEFT JOIN InUse i ON r.ID = i.ResourceID
     GROUP BY e.Number
     ORDER BY e.Number ASC;'''
+    result = []
     result = []
     try:
         cursor.execute(sql, (username))

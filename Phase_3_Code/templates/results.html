@@ -1,3 +1,65 @@
 {% extends "base.html" %}
 
 {% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h3 class="panel-title">Search Results</h3>
+    </div>
+    <div class="card-body">
+        <h4>
+        {% if incident %}
+            Results for {{ incident }}
+        {% else %}
+            All Resources
+        {% endif %}
+        </h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Status</th>
+                <th scope="col">Next Available</th>
+                {% if incident %}
+                <th scope="col">Distance</th>
+                <th scope="col">Action</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for it in resources %}
+            <tr>
+                <td scope="col">{{ it.ID }}</td>
+                <td scope="col">{{ it.Name }}</td>
+                <td scope="col">{{ it.Owner }}</td>
+                <td scope="col">{{ "$%.2f/%s" %(it.Cost, it.UnitName) }}</td>
+                <td scope="col">{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
+                <td scope="col">
+                    {% if it.ReturnDate %}
+                        {{it.ReturnDate.strftime('%Y-%m-%d')}}
+                    {% else %}
+                        NOW
+                    {% endif %}</td>
+                {% if incident %}
+                <td scope="col">{{ "%.2f" % it.proximity }}</td>
+                <td scope="col">
+                    <a class="btn btn-secondary" href="results.html?request={{it.ID}}">
+                    {% if it.Own and not it.ReturnDate %}
+                        Deploy
+                    {% else %}
+                        Request
+                    {% endif %}
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
