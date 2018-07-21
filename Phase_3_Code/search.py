@@ -29,13 +29,13 @@ def sql_string(keyword="", ESFNumber=None, radius=None, abbreviation=None, numbe
             tails.append(('Having proximity < %s', [radius]))
         cols.append(proximity_formula)
         cols.append('(r.Username = ic.Username) AS Own')
-        tails.append('ORDER BY proximity, r.Name ASC')
+        tails.append('\nORDER BY proximity, r.Name ASC')
         conditions.append(Usable)
         tables.insert(1, (Incident, [abbreviation, number]))
 
-    Q = ['SELECT', ', '.join(cols), 'FROM', *tables]
+    Q = ['SELECT', ', '.join(cols), '\nFROM', *tables]
     if conditions:
-        Q += ['Where', conditions[0]]
+        Q += ['\nWhere', conditions[0]]
         for c in conditions[1:]:
             Q += ['AND', c]
     Q += tails
