@@ -318,7 +318,7 @@ def requestResource():
     abbrv = req_data['abbreviation']
     number = req_data['number']
     requestDate = req_data['requestDate']
-    returnDate = req_data['returnDate'].strftime('%Y-%m-%d')
+    returnDate = req_data['returnDate']
     cursor = db.cursor()
     sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"
     try:
@@ -368,16 +368,18 @@ def deployResource():
 @app.route("/findMyResources")
 def findMyResources():
     username = request.args.get('username')
-    cursor =  db.cursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, InUse.StartDate, InUse.ReturnDate \
+    cursor =  db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, InUse.StartDate, InUse.ReturnDate, Resources.ID \
     FROM InUse \
     INNER JOIN Resources ON InUse.ResourceID = Resources.ID \
     INNER JOIN Incidents ON InUse.Abbreviation = Incidents.Abbreviation AND InUse.Number = Incidents.Number \
+    JOIN User u ON Resources.Username = u.Username \
     WHERE Incidents.Username = %s"
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-    except:
+    except Exception as ex:
+        print(ex)
         return "Error: unable to fetch data"
     result = []
     if data is None:
@@ -388,19 +390,22 @@ def findMyResources():
             rsc['RscName'] = row[0]
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
-            rsc['StartDate'] = row[3]
-            rsc['ReturnDate'] = row[4]
+            rsc['OwnerName'] = row[3]
+            rsc['StartDate'] = row[4]
+            rsc['ReturnDate'] = row[5]
+            rsc['ResourceId'] = row[6]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
 @app.route("/findMyRequests")
 def findMyRequests():
     username = request.args.get('username')
-    cursor = db.sursor
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate \
+    cursor = db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, u.Name, Requests.ReturnDate, Resources.ID \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
+    JOIN User u ON Resources.Username = u.Username \
     WHERE Incidents.Username = %s"
     try:
         cursor.execute(sql, (username))
@@ -416,24 +421,28 @@ def findMyRequests():
             rsc['RscName'] = row[0]
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
-            rsc['ReturnDate'] = row[3]
+            rsc['OwnerName'] = row[3]
+            rsc['ReturnDate'] = row[4]
+            rsc['ResourceID'] = row[5]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 
 @app.route("/findReceivedRequests")
 def findReceivedRequests():
     username = request.args.get('username')
-    cursor = db.cursor
-    sql = "SELECT Resource.ID, Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, e.status \
+    cursor = db.cursor()
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
     LEFT JOIN (SELECT ResourceID, 'True' as status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
+    JOIN User u ON Incidents.Username = u.Username \
     WHERE Resources.Username = %s"
     try:
         cursor.execute(sql, (username))
         data = cursor.fetchall()
-    except:
+    except Exception as ex:
+        print(ex)
         return "Error: unable to fetch data"
     result = []
     if data is None:
@@ -445,6 +454,8 @@ def findReceivedRequests():
             rsc['IncDes'] = row[1]
             rsc['RscUsername'] = row[2]
             rsc['ReturnDate'] = row[3]
+            rsc['IncidentOwnerName'] = row[4]
+            rsc['ResourceId'] = row[5]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 

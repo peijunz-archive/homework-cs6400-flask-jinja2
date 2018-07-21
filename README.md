@@ -156,12 +156,6 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"number": "2"
 	}
 	```
-	OR just searching by keyword:
-	```
-	{
-		"keyword": "resource"
-	}
-	```
 	OR searching by keyword and location:
 	```
 	{
@@ -185,7 +179,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	Notice that if `Status` has a number, it is not available.
 
 - Request Resource   
-	POST to /requestResource
+	POST to /requestResource   
 	Sample JSON body:
 	```
 	{
@@ -200,7 +194,7 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 	`{"status": "success"}`
 
 - Deploy Resource   
-	POST to /deployResource
+	POST to /deployResource   
 	Sample JSON body:
 	```
 	{
