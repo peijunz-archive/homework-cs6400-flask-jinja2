@@ -453,13 +453,14 @@ def findReceivedRequests():
 @app.route("/resourceReport")
 def resourceReport():
     username = request.args.get('username')
-    cursor = db.sursor
+    cursor = db.cursor()
     sql = '''SELECT e.Number, e.Description, count(r.ID) as total, count(i.ResourceID) as inuse FROM
     (SELECT * FROM Resources WHERE Username = %s) r
     Right JOIN ESF e ON r.PrimaryESFNumber = e.Number
     LEFT JOIN InUse i ON r.ID = i.ResourceID
     GROUP BY e.Number
     ORDER BY e.Number ASC;'''
+    result = []
     result = []
     try:
         cursor.execute(sql, (username))

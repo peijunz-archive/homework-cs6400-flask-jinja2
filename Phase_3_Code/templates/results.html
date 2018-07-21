@@ -38,7 +38,12 @@
                 <td scope="col">{{ it.Owner }}</td>
                 <td scope="col">{{ "$%.2f/%s" %(it.Cost, it.UnitName) }}</td>
                 <td scope="col">{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
-                <td scope="col">{% if it.ReturnDate %}it.ReturnDate{% else %}NOW{% endif %}</td>
+                <td scope="col">
+                    {% if it.ReturnDate %}
+                        {{it.ReturnDate.strftime('%Y-%m-%d')}}
+                    {% else %}
+                        NOW
+                    {% endif %}</td>
                 {% if incident %}
                 <td scope="col">{{ "%.2f" % it.proximity }}</td>
                 <td scope="col">
