@@ -251,25 +251,28 @@ def searchResults():
 
     if keyword==None:
         keyword = ''
+    keyword = '%{}%'.format(keyword)
     pieces = ["SELECT r.ID, r.Name, r.Username, r.Cost, r.UnitName, i.ReturnDate",
               "FROM Resources r",
-              "LEFT JOIN InUse i ON r.ResourceID = i.ResourceID",
-              "WHERE r.Name like %%%s%%"]
+              "LEFT JOIN InUse i ON r.ID = i.ResourceID",
+              "WHERE r.Name like %s"]
     if ESFNumber!=None:
-        pieces.append("AND (r.PrimaryESFNumber = %d \
-        OR %d IN (SELECT ESFNumber FROM AdditionalESF ad WHERE ad.ResourceID = r.ID))")
-    if abbrv and number!=None and radius!=None:
+        pieces.append('''AND (r.PrimaryESFNumber = %s
+        OR %s IN (SELECT ESFNumber FROM AdditionalESF ad
+        WHERE ad.ResourceID = r.ID))'''
+                      )
+    if abbrv!=None and number!=None and radius!=None:
         pieces.insert(1, ", 6371*ACOS(COS(RADIANS(r.Latitude)) \
          * COS(RADIANS(ic.Latitude)) \
          * COS(RADIANS(r.Longitude - ic.Longitude)) \
          + SIN(RADIANS(r.Latitude)) \
          * SIN(RADIANS(ic.Latitude))) AS proximity")
-        pieces.insert(3, ",Incident ic")
+        pieces.insert(3, "JOIN Incidents ic")
         pieces.append("AND ic.Abbreviation = %s \
-        AND ic.Number = %d \
-        AND proximity < %f \
+        AND ic.Number = %s \
+        HAVING proximity < %s \
         ORDER BY proximity")
-    sql = ''.join((string for string in pieces))
+    sql = '\n'.join((string for string in pieces))
 
     para=[keyword]
     if ESFNumber!=None:
@@ -281,24 +284,28 @@ def searchResults():
     try:
         #print(sql)
         # Execute the SQL command
+        print(sql, tuple(para))
         cursor.execute(sql, tuple(para))
         data = cursor.fetchall()
-    except:
-        print('Search Error')
+    except Exception as e:
+        print('Search Error:', e)
+        print('formatted', sql%tuple(para))
         return "Error: unable to fetch data"
     if data is not None:
         for row in data:
             rsc = {}
-            rsc['Name'] = row[0]
-            rsc['Cost'] = row[1]
-            rsc['UnitName'] = row[2]
-            rsc['Username'] = row[3]
-            rsc['ReturnDate'] = row[4]
+            rsc['ID'] = row[0]
+            rsc['Name'] = row[1]
+            rsc['Owner'] = row[2]
+            rsc['Cost'] = str(row[3])
+            rsc['UnitName'] = row[4]
+            rsc['ReturnDate'] = row[5]
             if abbrv!=None and number!=None and radius!=None:
-                rsc['proximity'] = row[5]
+                rsc['proximity'] = row[6]
             else:
                 rsc['proximity'] = None
             result.append(copy.copy(rsc))
+            print(rsc)
     return json.dumps(result)
 
 @app.route("/requestResource", methods=['POST'])

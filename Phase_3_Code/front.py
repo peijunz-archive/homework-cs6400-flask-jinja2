@@ -257,9 +257,8 @@ def results():
     print("Requesting", url, F)
     r = requests.post(url, json=F)
     print('Result content', r.content)
-    result = json.load(r.content)
-    return render_template("results.html",
-                           **result,
+    result = json.loads(r.content)
+    return render_template("results.html", resources=result,
                            **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/status.html")
