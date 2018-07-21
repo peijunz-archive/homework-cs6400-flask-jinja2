@@ -4,13 +4,11 @@ import copy
 import datetime
 
 app = Flask(__name__)
-<<<<<<< HEAD
+
+
 db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010",unix_socket='/Applications/MAMP/tmp/mysql/mysql.sock')
  
-=======
-db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
 
->>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
 @app.route("/")
 def index():
         return "Welcome to Emergency Resource Management System Web Service!"
@@ -20,29 +18,20 @@ def login():
         username = request.args.get('username')
         password = request.args.get('password')
         cursor = db.cursor()
-<<<<<<< HEAD
 
-        sql = "SELECT * from `User` where Username=%s and Password=%s"
-=======
         sql = "SELECT Name from `User` where Username=%s and Password=%s"
->>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
+
         try:
             #Execute the SQL command
             print(sql%(username, password))
             cursor.execute(sql, (username, password))
             # Fetch all the rows in a list of lists.
             data = cursor.fetchone()
-        except pymysql.err.ProgrammingError:
-<<<<<<< HEAD
-            print("SQL error")
-            data = None
 
-        result={}
-        if data is None:
-=======
+        except pymysql.err.ProgrammingError:
             print ("Error: unable to fetch data")
->>>>>>> 7adcbcbbe2060d82ca61da46a26f5957ae4ab880
             return json.dumps({'status': 'failed'})
+            
         print(data)
         return json.dumps({'status': 'success', 'name':data[0]})
 
