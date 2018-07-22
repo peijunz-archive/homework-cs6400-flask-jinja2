@@ -51,13 +51,9 @@
                 {% if it.Own and it.ReturnDate %}
                     Deployed
                 {% else %}
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#requestModal" data-id="{{ it.ID }}">
-                    {% if it.Own %}
-                    Deploy
-                    {% else %}
-                    Request
-                    {% endif %}
-                    </button>
+                    <button type="button" id='action{{ it.ID}}' class="btn btn-secondary"
+                            data-toggle="modal" data-target="#requestModal"
+                            data-id="{{ it.ID }}">{% if it.Own %}Deploy{% else %}Request{% endif %}</button>
                 {% endif %}
                 </td>
                 {% endif %}

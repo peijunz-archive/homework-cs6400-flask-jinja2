@@ -193,7 +193,6 @@ To learn more about PyMySQL: go to https://www.tutorialspoint.com/python3/python
 		"resourceID": 3,
 		"abbreviation": "ED",
 		"number": 3,
-		"requestDate": "2018-7-21",
 		"returnDate": "2018-8-21"
 	}
 	```

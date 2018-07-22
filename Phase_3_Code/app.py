@@ -284,7 +284,7 @@ def requestResource():
     rscID = req_data['resourceID']
     abbrv = req_data['abbreviation']
     number = req_data['number']
-    requestDate = req_data['requestDate']
+    requestDate = datetime.datetime.now().strftime('%Y-%m-%d')
     returnDate = req_data['returnDate']
     cursor = db.cursor()
     sql = "INSERT INTO Requests VALUES (%s, %s, %s, %s, %s)"

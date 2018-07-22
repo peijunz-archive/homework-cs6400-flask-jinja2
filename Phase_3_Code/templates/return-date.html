@@ -1,6 +1,6 @@
 <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document" id='requestModal'>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="requestModalLabel">[Act] Resource</h5>
@@ -51,10 +51,19 @@
     var incident = $('#incident').text();
     var action = $('#send').text();
         console.log("Send data");
-        $.post('action', { id : id, incident: incident, action : action }, function(){
-        $('.success_msg').append("Vote Successfully Recorded");
-            $('.success_msg').fadeOut();
-        });
+        $.post('action',
+            { resourceID : id,
+                incident: incident,
+                action : action,
+                returnDate: $('#returnDate').val()
+            },
+            function(){
+            $('.success_msg').append("Vote Successfully Recorded");
+            $('.success_msg').fadeOut();});
+        $('#requestModal').modal('toggle');
+        $("#action"+id).prop('disabled', true);
+        var t = $("#action"+id).text();
+        $("#action"+id).text('Done');
 
         return false;}
      );
