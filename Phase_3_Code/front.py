@@ -37,12 +37,12 @@ def parseESF(s):
         print('Invalid', s)
         return None
 
-def parseIncident(s):
+def parseIncident(s, ind=0):
     print('Incident', s)
     if not s:
         return None
     try:
-        s = s.split()[0].lstrip('(').strip(')').split('-')
+        s = s.split()[ind].lstrip('(').strip(')').split('-')
         number = parseObj(s[1])
         if isinstance(number, int):
             return {"abbreviation":s[0], "number": number}
@@ -244,6 +244,33 @@ def search():
     getIncidents()
     return render_template("search.html", **extract(session, 'name', 'username', 'userinfo', 'ESF', 'incidents'))
 
+@app.route("/action", methods=['POST'])
+def process_action():
+    '''example: id=6&deploy=1'''
+    print(">>> Entering results", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    F = extract(request.form)
+    incident = parseIncident(F['incident'], ind=-1)
+    F.update(incident)
+    url = server+'/requestResource'
+    print("Requesting", url, F)
+    r = requests.post(url, json=F)
+    print('Result content', r.content)
+    result = json.loads(r.content)
+    if result['status'] == 'success':
+        if F['action'] == 'Deploy':
+            url = server+'/deployResource'
+            print("Requesting", url, F)
+            r = requests.post(url, json=F)
+            print('Result content', r.content)
+            result = json.loads(r.content)
+            if result['status'] == 'success':
+                return 'success'
+        return 'success'
+    return "failed"
+
+
 @app.route("/results.html", methods=['POST'])
 def results():
     print(">>> Entering results", session)
@@ -253,11 +280,13 @@ def results():
     F['keyword'] = request.form.get('keyword', '')
     F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
     F['radius'] = parseObj(request.form.get('radius', None))
-    incident =parseIncident(request.form.get('incident', ''))
-    if incident is not None:
-        F.update(incident)
+    session['incident'] = parseIncident(request.form.get('incident', ''))
+    if session['incident'] is not None:
+        F.update(session['incident'])
         incident = request.form.get('incident', '').split()
         incident = ' '.join(incident[1:]+incident[:1])
+    else:
+        incident = None
     url = server+'/searchResults'
     print("Requesting", url, F)
     r = requests.post(url, json=F)
