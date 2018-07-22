@@ -84,11 +84,36 @@
             <div class="form-group row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">
-                    <button type="submit" class="btn btn-primary btn-block">Save</button>
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#resourceModal">Save</button>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
         </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block tail %}
+<div class="modal fade" id="resourceModal" tabindex="-1" role="dialog" aria-labelledby="resourceModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" id='resourceModal'>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">[Act] Resource Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    <p> Detailed Resource Information!!! </p> 
+            </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="send">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
