@@ -132,7 +132,7 @@ def main_menu():
         print("Request content", r.content)
         t = json.loads(r.content)
         session['userinfo'] = t
-    print("userinfo: ", session.get('userinfo'))
+    print(">>> userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'name', 'username', 'userinfo'))
 
 @app.route("/add-resource.html")
