@@ -6,7 +6,7 @@ import datetime
 app = Flask(__name__)
 
 
-db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010", unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock")
+db = pymysql.connect("localhost","user","Mysql123!","cs6400_summer18_team010")
 
 @app.route("/")
 def index():

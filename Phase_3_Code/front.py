@@ -244,6 +244,30 @@ def search():
     getIncidents()
     return render_template("search.html", **extract(session, 'name', 'username', 'userinfo', 'ESF', 'incidents'))
 
+@app.route("/results.html", methods=['POST'])
+def results():
+    print(">>> Entering results", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    F = {}
+    F['keyword'] = request.form.get('keyword', '')
+    F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
+    F['radius'] = parseObj(request.form.get('radius', None))
+    session['incident'] = parseIncident(request.form.get('incident', ''))
+    if session['incident'] is not None:
+        F.update(session['incident'])
+        incident = request.form.get('incident', '').split()
+        incident = ' '.join(incident[1:]+incident[:1])
+    else:
+        incident = None
+    url = server+'/searchResults'
+    print("Requesting", url, F)
+    r = requests.post(url, json=F)
+    print('Result content', r.content)
+    result = json.loads(r.content)
+    return render_template("results.html", resources=result, incident=incident,
+                           **extract(session, 'name', 'username', 'userinfo'))
+
 @app.route("/results.do", methods=['POST'])
 def results_action():
     '''example: id=6&deploy=1'''
@@ -271,30 +295,6 @@ def results_action():
     else:
         return 'Success'
 
-@app.route("/results.html", methods=['POST'])
-def results():
-    print(">>> Entering results", session)
-    if 'username' not in session:
-        return redirect("/login.html")
-    F = {}
-    F['keyword'] = request.form.get('keyword', '')
-    F['ESFNumber'] = parseESF(request.form.get('ESFNumber'))
-    F['radius'] = parseObj(request.form.get('radius', None))
-    session['incident'] = parseIncident(request.form.get('incident', ''))
-    if session['incident'] is not None:
-        F.update(session['incident'])
-        incident = request.form.get('incident', '').split()
-        incident = ' '.join(incident[1:]+incident[:1])
-    else:
-        incident = None
-    url = server+'/searchResults'
-    print("Requesting", url, F)
-    r = requests.post(url, json=F)
-    print('Result content', r.content)
-    result = json.loads(r.content)
-    return render_template("results.html", resources=result, incident=incident,
-                           **extract(session, 'name', 'username', 'userinfo'))
-
 @app.route("/status.html")
 def status():
     print(">>> Entering status", session)
@@ -311,6 +311,21 @@ def status():
     return render_template("status.html", inuse=stat[0], requested=stat[1], received=stat[2],
                            **extract(session, 'name', 'username', 'userinfo'))
 
+@app.route("/updateStatus", methods=['POST'])
+def updateStatus():
+    print(">>> Entering update status", session)
+    if 'username' not in session:
+        return redirect("/login.html")
+    F = extract(request.form)
+    if F['action'] == 'Cancel' or F['action'] == 'Reject':
+        url = server + '/deleteRequest'
+    else:
+        url = "{}/{}{}".format(server, F['action'].lower(), 'Resource')
+    print("Requesting", url, F)
+    r = requests.post(url, json=F)
+    print('Result content', r.content)
+    result = json.loads(r.content)
+    print(result['status'])
 
 @app.route("/report.html")
 def report():

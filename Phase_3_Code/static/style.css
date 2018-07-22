@@ -87,6 +87,9 @@ td .btn {
     width: 6em;
 }
 
+.btn:disabled{
+    opacity: 0;
+}
 
 caption {
     caption-side: top;

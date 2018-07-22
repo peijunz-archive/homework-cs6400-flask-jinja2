@@ -31,7 +31,9 @@
                     <td>{{ it.OwnerName }}</td>
                     <td>{{ it.StartDate }}</td>
                     <td>{{ it.ReturnDate }}</td>
-                    <td><button type="button" id='return{{ it.ResourceID }}' class="btn btn-secondary btn-return">Return</button></td>
+                    <td><button type="button" id='return{{ it.ResourceID }}'
+                            data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
+                                class="btn btn-secondary">Return</button></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -56,7 +58,9 @@
                     <td>{{ it.IncDes }}</td>
                     <td>{{ it.OwnerName }}</td>
                     <td>{{ it.ReturnDate }}</td>
-                    <td><button type="button" id='cancel{{ it.ResourceID}}' class="btn btn-secondary btn-cancel">Cancel</button></td>
+                    <td><button type="button" id='cancel{{ it.ResourceID}}'
+                            data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
+                                class="btn btn-secondary">Cancel</button></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -82,11 +86,14 @@
                     <td>{{ it.IncidentOwnerName }}</td>
                     <td>{{ it.ReturnDate }}</td>
                     <td>
-                        <button id='deploy{{ it.ResourceID }}' class="btn btn-secondary btn-deploy"
-                            data-id="{{ it.ResourceID }}" data-incident="{{ '%s (%s-%s)'%(it.IncDes, it.IncidentAbbrv, it.IncidentNumber) }}"
-                                {%if it.InUse %}style="opacity:0;" disabled{% endif %}
-                                type="button">Deploy</button>
-                        <button type="button" id='{{ it.ID}}' class="btn btn-secondary btn-reject">Reject</button></td>
+                        <button id='deploy{{ it.ResourceID }}' class="btn btn-secondary"
+                            data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
+                            {%if it.InUse %}disabled{% endif %}
+                            type="button">Deploy</button>
+                        <button id='{{ it.ID}}' class="btn btn-secondary"
+                            data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
+                            type="button" >Reject</button>
+                    </td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -94,7 +101,23 @@
         </div>
     </div>
 </div>
-<script>
+{% endblock %}
 
+{% block tail %}
+<script>
+    $('.btn').on('click', function (event) {
+        var button = $(this);
+        console.log("Hello", button);
+        $.post('updateStatus',
+            { resourceID : button.data('id'),
+                abbreviation: button.data('abbr'),
+                number : button.data('no'),
+                action: button.text().trim()
+            },
+            function(){
+            $('.success_msg').append("Vote Successfully Recorded");
+            $('.success_msg').fadeOut();});
+        button.prop('disabled', true);
+    });
 </script>
 {% endblock %}
