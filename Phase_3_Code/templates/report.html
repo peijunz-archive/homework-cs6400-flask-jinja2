@@ -23,20 +23,20 @@
                 <tbody>
                 {% for it in result %}
                 <tr>
-                    <th scope="row">{{ it.Number }}</td>
+                    <th scope="row" class="text-center">{{ it.Number }}</td>
                     <td>{{ it.Description }}</td>
-                    <td>{{ it.total }}</td>
-                    <td>{{ it.inuse }}</td>
+                    <td class="text-center">{{ it.total }}</td>
+                    <td class="text-center">{{ it.inuse }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
 
                 <tfoot>
-                <tr>
+                <tr bgcolor="#D6DBDF">
                     <th></th>
                     <th>Total</th>
-                    <th>{{ total }}</th>
-                    <th>{{ inuse }}</th>
+                    <th class="text-center">{{ total }}</th>
+                    <th class="text-center">{{ inuse }}</th>
                 </tr>
                 </tfoot>
 
