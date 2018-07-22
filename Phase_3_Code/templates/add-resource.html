@@ -7,7 +7,7 @@
         <h3 class="panel-title">New Resource Information</h3>
     </div>
     <div class="card-body">
-        <form action="add-resource.do" class="form" method="post">
+        <form role="form" id="ps_entry" name="ps_entry" method="post" onsubmit="return entry_check()" action="/user/ps/add/">
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Resource ID</label>
                 <div class="col-sm-9 info-col">{{ nextResourceId }}</div>
@@ -18,7 +18,7 @@
             </div>
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Resource Name</label>
-                <input name="name" type="text" class="form-control col-sm-9" required>
+                <input name="name" type="text" class="form-control col-sm-9" id="111" required>
             </div>
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Primary ESF</label>
@@ -84,7 +84,7 @@
             <div class="form-group row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">
-                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#resourceModal">Save</button>
+                    <button type="button" name="btn" id="submitBtn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#resourceModal">Save</button>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
@@ -99,13 +99,28 @@
     <div class="modal-dialog modal-dialog-centered" role="document" id='resourceModal'>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="requestModalLabel">[Act] Resource Info</h5>
+                <h5 class="modal-title" id="requestModalLabel">Confirm Added Resource Info</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                    <p> Detailed Resource Information!!! </p> 
+                <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th>Resource ID</th>
+                    <td>{{ nextResourceId }}</td>
+                </tr>
+                <tr>
+                    <th>Owner</th>
+                    <td>{{ name }}</td>
+                </tr>
+                 <tr>
+                    <th>Reserouce Name</th>
+                    <td id="222"></td>
+                </tr>
+                </tbody>
+                </table>
             </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -116,4 +131,12 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    $('#submitBtn').click(function () {
+        /* when the button in the form, display the entered values in the modal */
+        $('#222').html($('#111').val());
+});
+</script>
 {% endblock %}
