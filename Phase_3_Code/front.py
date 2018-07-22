@@ -244,8 +244,8 @@ def search():
     getIncidents()
     return render_template("search.html", **extract(session, 'name', 'username', 'userinfo', 'ESF', 'incidents'))
 
-@app.route("/action", methods=['POST'])
-def process_action():
+@app.route("/results.do", methods=['POST'])
+def results_action():
     '''example: id=6&deploy=1'''
     print(">>> Entering results", session)
     if 'username' not in session:
@@ -258,18 +258,18 @@ def process_action():
     r = requests.post(url, json=F)
     print('Result content', r.content)
     result = json.loads(r.content)
-    if result['status'] == 'success':
-        if F['action'] == 'Deploy':
-            url = server+'/deployResource'
-            print("Requesting", url, F)
-            r = requests.post(url, json=F)
-            print('Result content', r.content)
-            result = json.loads(r.content)
-            if result['status'] == 'success':
-                return 'success'
-        return 'success'
-    return "failed"
-
+    print(result['status'])
+    if result['status'] != 'success':
+        return 'Failed'
+    if F['action'] != 'Request':
+        url = server+'/deployResource'
+        print("Requesting", url, F)
+        r = requests.post(url, json=F)
+        print('Result content', r.content)
+        result = json.loads(r.content)
+        return result['status']
+    else:
+        return 'Success'
 
 @app.route("/results.html", methods=['POST'])
 def results():
@@ -292,9 +292,6 @@ def results():
     r = requests.post(url, json=F)
     print('Result content', r.content)
     result = json.loads(r.content)
-    for i in result:
-        if i['ReturnDate']:
-            i['ReturnDate'] = datetime.date(*i['ReturnDate'])
     return render_template("results.html", resources=result, incident=incident,
                            **extract(session, 'name', 'username', 'userinfo'))
 
@@ -303,17 +300,15 @@ def status():
     print(">>> Entering status", session)
     if 'username' not in session:
         return redirect("/login.html")
-    #url = server + '/resourceStatus?'+ urlencode({'username':session['username']})
-    #r = requests.get(url)
-    #print("Request content", r.content)
-    #t = json.loads(r.content)
-    #total = 0
-    #inuse = 0
-    #for i in t:
-    #    total += i['total']
-    #    inuse += i['inuse']
-    dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
-    return render_template("status.html", inuse=[dummy]*3, requested=[dummy]*3, received=[dummy]*4,
+    L = ['/findMyResources?', '/findMyRequests?', '/findReceivedRequests?']
+    stat = []
+    for i in L:
+        url = server + i+ urlencode({'username':session['username']})
+        r = requests.get(url)
+        print("Request content", r.content)
+        stat.append(json.loads(r.content))
+    #dummy = {'ID': '0', 'Name': 'Food','incident':'Fire','owner':'Somebody', 'startDate':'start','returnDate':'end'}
+    return render_template("status.html", inuse=stat[0], requested=stat[1], received=stat[2],
                            **extract(session, 'name', 'username', 'userinfo'))
 
 

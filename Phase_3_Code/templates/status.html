@@ -25,13 +25,13 @@
                 <tbody>
                 {% for it in inuse %}
                 <tr>
-                    <td scope="row">{{ it.ID }}</td>
-                    <td>{{ it.Name }}</td>
-                    <td>{{ it.incident }}</td>
-                    <td>{{ it.owner }}</td>
-                    <td>{{ it.startDate }}</td>
-                    <td>{{ it.returnDate }}</td>
-                    <td>action here</td>
+                    <td scope="row">{{ it.ResourceID }}</td>
+                    <td>{{ it.ResName }}</td>
+                    <td>{{ it.IncDes }}</td>
+                    <td>{{ it.OwnerName }}</td>
+                    <td>{{ it.StartDate }}</td>
+                    <td>{{ it.ReturnDate }}</td>
+                    <td><button type="button" id='return{{ it.ResourceID }}' class="btn btn-secondary btn-return">Return</button></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -51,12 +51,12 @@
                 <tbody>
                 {% for it in requested %}
                 <tr>
-                    <td scope="row">{{ it.ID }}</td>
-                    <td>{{ it.Name }}</td>
-                    <td>{{ it.incident }}</td>
-                    <td>{{ it.owner }}</td>
-                    <td>{{ it.returnDate }}</td>
-                    <td>action here</td>
+                    <td scope="row">{{ it.ResourceID }}</td>
+                    <td>{{ it.ResName }}</td>
+                    <td>{{ it.IncDes }}</td>
+                    <td>{{ it.OwnerName }}</td>
+                    <td>{{ it.ReturnDate }}</td>
+                    <td><button type="button" id='cancel{{ it.ResourceID}}' class="btn btn-secondary btn-cancel">Cancel</button></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -76,12 +76,17 @@
                 <tbody>
                 {% for it in received %}
                 <tr>
-                    <td scope="row">{{ it.ID }}</td>
-                    <td>{{ it.Name }}</td>
-                    <td>{{ it.incident }}</td>
-                    <td>{{ it.owner }}</td>
-                    <td>{{ it.returnDate }}</td>
-                    <td>action here</td>
+                    <td scope="row">{{ it.ResourceID }}</td>
+                    <td>{{ it.ResName }}</td>
+                    <td>{{ it.IncDes }}</td>
+                    <td>{{ it.IncidentOwnerName }}</td>
+                    <td>{{ it.ReturnDate }}</td>
+                    <td>
+                        <button id='deploy{{ it.ResourceID }}' class="btn btn-secondary btn-deploy"
+                            data-id="{{ it.ResourceID }}" data-incident="{{ '%s (%s-%s)'%(it.IncDes, it.IncidentAbbrv, it.IncidentNumber) }}"
+                                {%if it.InUse %}style="opacity:0;" disabled{% endif %}
+                                type="button">Deploy</button>
+                        <button type="button" id='{{ it.ID}}' class="btn btn-secondary btn-reject">Reject</button></td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -89,8 +94,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
+<script>
 
-{% block modal %}
-{% include 'return-date.html' %}
+</script>
 {% endblock %}

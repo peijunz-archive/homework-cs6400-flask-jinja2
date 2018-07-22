@@ -269,7 +269,7 @@ def searchResults():
             rsc['Owner'] = row[2]
             rsc['Cost'] = float(row[3])
             rsc['UnitName'] = row[4]
-            rsc['ReturnDate'] = None if row[5] is None else row[5].isocalendar()
+            rsc['ReturnDate'] = row[5].strftime('%Y-%m-%d') if row[5] else None
             if len(row)>6:
                 rsc['proximity'] = row[6]
                 rsc['Own'] = row[7]
@@ -354,13 +354,13 @@ def findMyResources():
     else:
         rsc={}
         for row in data:
-            rsc['RscName'] = row[0]
+            rsc['ResName'] = row[0]
             rsc['IncDes'] = row[1]
-            rsc['RscUsername'] = row[2]
+            rsc['ResUsername'] = row[2]
             rsc['OwnerName'] = row[3]
-            rsc['StartDate'] = row[4]
-            rsc['ReturnDate'] = row[5]
-            rsc['ResourceId'] = row[6]
+            rsc['StartDate'] = row[4].strftime('%Y-%m-%d')
+            rsc['ReturnDate'] = row[5].strftime('%Y-%m-%d')
+            rsc['ResourceID'] = row[6]
             rsc['IncidentAbbrv'] = row[7]
             rsc['IncidentNumber'] = row[8]
             result.append(copy.copy(rsc))
@@ -387,11 +387,11 @@ def findMyRequests():
     else:
         rsc={}
         for row in data:
-            rsc['RscName'] = row[0]
+            rsc['ResName'] = row[0]
             rsc['IncDes'] = row[1]
-            rsc['RscUsername'] = row[2]
+            rsc['ResUsername'] = row[2]
             rsc['OwnerName'] = row[3]
-            rsc['ReturnDate'] = row[4]
+            rsc['ReturnDate'] = row[4].strftime('%Y-%m-%d')
             rsc['ResourceID'] = row[5]
             rsc['IncidentAbbrv'] = row[6]
             rsc['IncidentNumber'] = row[7]
@@ -402,11 +402,11 @@ def findMyRequests():
 def findReceivedRequests():
     username = request.args.get('username')
     cursor = db.cursor()
-    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID, Incidents.Abbreviation, Incidents.Number \
+    sql = "SELECT Resources.Name, Incidents.Description, Resources.Username, Requests.ReturnDate, u.Name, Resources.ID, Incidents.Abbreviation, Incidents.Number, e.Status \
     FROM Requests \
     INNER JOIN Incidents ON Requests.Abbreviation = Incidents.Abbreviation AND Requests.Number = Incidents.Number \
     INNER JOIN Resources ON Requests.ResourceID = Resources.ID \
-    LEFT JOIN (SELECT ResourceID, 'True' as status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
+    LEFT JOIN (SELECT ResourceID, 1 as Status FROM InUse) e ON Requests.ResourceID = e.ResourceID \
     JOIN User u ON Incidents.Username = u.Username \
     WHERE Resources.Username = %s"
     try:
@@ -421,14 +421,15 @@ def findReceivedRequests():
     else:
         rsc={}
         for row in data:
-            rsc['RscName'] = row[0]
+            rsc['ResName'] = row[0]
             rsc['IncDes'] = row[1]
-            rsc['RscUsername'] = row[2]
-            rsc['ReturnDate'] = row[3]
+            rsc['ResUsername'] = row[2]
+            rsc['ReturnDate'] = row[3].strftime('%Y-%m-%d')
             rsc['IncidentOwnerName'] = row[4]
-            rsc['ResourceId'] = row[5]
+            rsc['ResourceID'] = row[5]
             rsc['IncidentAbbrv'] = row[6]
             rsc['IncidentNumber'] = row[7]
+            rsc['InUse'] = row[8]
             result.append(copy.copy(rsc))
     return json.dumps(result)
 

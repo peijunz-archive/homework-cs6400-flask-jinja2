@@ -40,7 +40,7 @@
                 <td>{% if it.ReturnDate %}NOT Available{% else %}Available{% endif %}</td>
                 <td>
                 {% if it.ReturnDate %}
-                    {{it.ReturnDate.strftime('%Y-%m-%d')}}
+                    {{ it.ReturnDate }}
                 {% else %}
                     NOW
                 {% endif %}
@@ -66,5 +66,75 @@
 {% endblock %}
 
 {% block modal %}
-{% include 'return-date.html' %}
+<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" id='requestModal'>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">[Act] Resource</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id='request'>
+                    <div class="form-group">
+                        <label class="col-form-label">Incident</label>
+                        <div class="info-col" id="incident"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Resource ID</label>
+                        <div class="info-col" id="resourceID"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Expected Return Date</label>
+                        <input id='returnDate' name="returnDate" type="date" class="form-control" min='1990-01-01' required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="send">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#requestModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var modal = $(this);
+        dest = modal.find('#send')
+        var id = button.data('id');// Extract info from data-* attributes
+        dest.data('id', id);
+        var act = button.text().trim();
+        dest.data('act', act);
+        var incident = $(".incidentName").text();
+        dest.data('incident', incident);
+
+        modal.find('#resourceID').text(id);
+        modal.find('#requestModalLabel').text(act+' Resource');
+        modal.find('#send').text(act);
+        modal.find('#incident').text(incident)
+        console.log('popup done')
+    });
+    $('#request').on("submit", function() {
+    var dest = $('#send');
+        console.log(dest.data('id')+dest.data('incident')+dest.data('act'));
+        $.post('results.do',
+            { resourceID : dest.data('id'),
+                incident: dest.data('incident'),
+                action : dest.data('act'),
+                returnDate: $('#returnDate').val()
+            },
+            function(){
+            $('.success_msg').append("Vote Successfully Recorded");
+            $('.success_msg').fadeOut();});
+        $('#requestModal').modal('toggle');
+        var button = $("#action"+dest.data('id'));
+        button.prop('disabled', true);
+        button.text('Done');
+        return false;}
+     );
+</script>
 {% endblock %}
