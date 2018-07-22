@@ -221,9 +221,10 @@ def add_incident_do():
     print("Original form", request.form)
     if not F.get('declaration', '') or len(F['declaration'])>50:
         return 'Error in declaration'
-    for abbr, decl in session['Declarations']:
-        if decl == F['declaration']:
-            F['abbreviation'] = abbr
+    for decl in session['declarations']:
+        print(F['declaration'])
+        if decl['Name'] == F['declaration']:
+            F['abbreviation'] = decl['Abbreviation']
             del F['declaration']
             break
     for k in ['latitude', 'longitude']:
