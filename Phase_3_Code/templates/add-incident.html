@@ -11,8 +11,8 @@
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Declaration</label>
                 <select name="declaration" class="form-control col-sm-9" required>
-                    {% for item in declarations %}
-                    <option>{{ item }}</option>
+                    {% for it in declarations %}
+                    <option>{{ it.Name }}</option>
                     {% endfor %}
                 </select>
             </div>

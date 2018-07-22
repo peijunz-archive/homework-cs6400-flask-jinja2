@@ -23,16 +23,16 @@
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Primary ESF</label>
                 <select name="primaryESFNumber" class="form-control col-sm-9" required>
-                    {% for item in ESF %}
-                    <option>{{ item }}</option>
+                    {% for it in ESF %}
+                    <option>{{ '(#%02d) %s' % (it.Number, it.Description) }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Additional ESFs</label>
                 <select multiple name="additionalESFNumbers" class="form-control col-sm-9">
-                    {% for item in ESF %}
-                    <option>{{ item }}</option>
+                    {% for it in ESF %}
+                    <option>{{ '(#%02d) %s' % (it.Number, it.Description) }}</option>
                     {% endfor %}
                 </select>
             </div>

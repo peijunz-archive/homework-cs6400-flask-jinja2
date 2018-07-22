@@ -58,7 +58,17 @@ def getESF():
         r = requests.get(url)
         print("Request content", r.content)
         t = json.loads(r.content)
-        session['ESF'] = ['(#{:02d}) {}'.format(n, name) for n, name in t['ESF']]
+        session['ESF'] = t
+        # TO BE deleted ['(#{:02d}) {}'.format(n, name) for n, name in t]
+
+def getDeclarations():
+    if 'declarations' not in session:
+        url = server + '/getDeclarations'
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['declarations'] = t
 
 def getTimeUnit():
     if 'TimeUnit' not in session:
@@ -67,7 +77,7 @@ def getTimeUnit():
         r = requests.get(url)
         print("Request content", r.content)
         t = json.loads(r.content)
-        session['TimeUnit'] = t['TimeUnit']
+        session['TimeUnit'] = t
 
 def getIncidents():
     if 'incidents' not in session:
@@ -144,6 +154,8 @@ def add_resource():
     getTimeUnit()
     getESF()
     getNextResourceID()
+    if session.get('nextResourceId', None) is None:
+        return "Failed in getting next resource ID"
     return render_template("add-resource.html", **extract(session, 'name', 'username', 'userinfo', 'TimeUnit', 'ESF', 'nextResourceId'))
 
 @app.route("/add-resource.do", methods=['POST'])
@@ -191,16 +203,8 @@ def add_incident():
     print(">>> Entering Add incident", session)
     if 'username' not in session:
         return redirect("/login.html")
-    if 'Declarations' not in session:
-        url = server + '/getDeclarations'
-        print("Sending", url)
-        r = requests.get(url)
-        print("Request content", r.content)
-        t = json.loads(r.content)
-        session['Declarations'] = t['Declarations']
-    # Get resource ID
-    Decl = [i[1] for i in session['Declarations']]
-    return render_template("add-incident.html", declarations=Decl, **extract(session, 'name', 'username', 'userinfo'))
+    getDeclarations()
+    return render_template("add-incident.html", **extract(session, 'name', 'username', 'userinfo', 'declarations'))
 
 @app.route("/add-incident.do", methods=['POST'])
 def add_incident_do():

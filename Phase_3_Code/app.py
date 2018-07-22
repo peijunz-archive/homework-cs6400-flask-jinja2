@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, json, render_template
 import pymysql
 import copy
 import datetime
+from search import sql_string
 
 
 def sql_format(s, args):
@@ -40,10 +41,13 @@ def login():
 
     except pymysql.err.ProgrammingError:
         print("Error: unable to fetch data")
+        data = []
+
+    if data:
+        return json.dumps({'status': 'success', 'name': data[0]})
+    else:
         return json.dumps({'status': 'failed'})
 
-    print(data)
-    return json.dumps({'status': 'success', 'name': data[0]})
 
     # disconnect from server
     # db.close()
@@ -102,13 +106,12 @@ def getESF():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
     except pymysql.err.ProgrammingError:
-        return "Error: unable to fetch data"
+        print("Error: unable to fetch data")
+        data = []
     if data is None:
-        result['status'] = 'No ESF Found.'
-    else:
-        print(data)
-        result['ESF'] = data
-    return json.dumps(result)
+        data = []
+    data = [{"Number": it[0], "Description": it[1]} for it in data]
+    return json.dumps(data)
 
 
 @app.route("/getTimeUnit")
@@ -123,15 +126,13 @@ def getTimeUnit():
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
     except pymysql.err.ProgrammingError:
-        return "Error: unable to fetch data"
+        print("Error: unable to fetch data")
+        data = []
     if data is None:
-        result['status'] = 'No Time Unit Found.'
-    else:
-        tu = {}
-        result['TimeUnit'] = [row[0] for row in data]
-    print(result)
-    return json.dumps(result)
-
+        data = []
+    data = [row[0] for row in data]
+    print(data)
+    return json.dumps(data)
 
 @app.route("/getDeclarations")
 def getDeclarations():
@@ -144,14 +145,34 @@ def getDeclarations():
         cursor.execute(sql)
         # Fetch all the rows in a list of lists.
         data = cursor.fetchall()
-    except:
-        return "Error: unable to fetch data"
+    except pymysql.err.ProgrammingError:
+        print("Error: unable to fetch data")
+        data = []
     if data is None:
-        result['status'] = 'No Declarations Found.'
-    else:
-        print(data)
-        result['Declarations'] = data
-    return json.dumps(result)
+        data = []
+    data = [{"Abbreviation": it[0], "Name": it[1]} for it in data]
+    return json.dumps(data)
+
+
+@app.route("/getNextResourceId")
+def getNextResourceId():
+    cursor = db.cursor()
+    sql = "SHOW TABLE STATUS LIKE 'Resources'"
+    result = {}
+    try:
+        # Execute the SQL command
+        print(sql)
+        cursor.execute(sql)
+        # Fetch all the rows in a list of lists.
+        data = cursor.fetchone()
+        if not data:
+            result['nextResourceId'] = None
+        else:
+            result['nextResourceId'] = data[10]
+        return json.dumps(result)
+    except Exception as ex:
+        print(ex)
+        return "Error: unable to fetch data"
 
 
 @app.route("/addIncident", methods=['POST'])
@@ -178,27 +199,6 @@ def addIncident():
         db.rollback()
         print(ex)
         return json.dumps({'status': 'failed'})
-
-
-@app.route("/getNextResourceId")
-def getNextResourceId():
-    cursor = db.cursor()
-    sql = "SHOW TABLE STATUS LIKE 'Resources'"
-    result = {}
-    try:
-        # Execute the SQL command
-        print(sql)
-        cursor.execute(sql)
-        # Fetch all the rows in a list of lists.
-        data = cursor.fetchone()
-        if data is None:
-            result['status'] = 'No Id Found.'
-        else:
-            result['nextResourceId'] = data[10]
-        return json.dumps(result)
-    except Exception as ex:
-        print(ex)
-        return "Error: unable to fetch data"
 
 
 @app.route("/addResource", methods=['POST'])
@@ -266,9 +266,6 @@ def getIncidentsForUser():
         incident['Latitude'] = row[5]
         result.append(incident)
     return json.dumps(result)
-
-
-from search import sql_string
 
 
 @app.route("/searchResults", methods=['POST'])

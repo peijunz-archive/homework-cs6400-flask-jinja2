@@ -17,8 +17,8 @@
                 <label class="col-sm-3 col-form-label">ESF</label>
                 <select name="ESFNumber" class="form-control col-sm-9">
                     <option selected>Please Select...</option>
-                    {% for item in ESF %}
-                    <option>{{ item }}</option>
+                    {% for it in ESF %}
+                    <option>{{ '(#%02d) %s' % (it.Number, it.Description) }}</option>
                     {% endfor %}
                 </select>
             </div>
