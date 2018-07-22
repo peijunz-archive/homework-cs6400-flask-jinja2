@@ -31,7 +31,7 @@
                     <td>{{ it.OwnerName }}</td>
                     <td>{{ it.StartDate }}</td>
                     <td>{{ it.ReturnDate }}</td>
-                    <td><button type="button" id='return{{ it.ResourceID }}'
+                    <td><button type="button"
                             data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
                                 class="btn btn-secondary">Return</button></td>
                 </tr>
@@ -58,7 +58,7 @@
                     <td>{{ it.IncDes }}</td>
                     <td>{{ it.OwnerName }}</td>
                     <td>{{ it.ReturnDate }}</td>
-                    <td><button type="button" id='cancel{{ it.ResourceID}}'
+                    <td><button type="button"
                             data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
                                 class="btn btn-secondary">Cancel</button></td>
                 </tr>
@@ -86,11 +86,11 @@
                     <td>{{ it.IncidentOwnerName }}</td>
                     <td>{{ it.ReturnDate }}</td>
                     <td>
-                        <button id='deploy{{ it.ResourceID }}' class="btn btn-secondary"
+                        <button class="btn btn-secondary"
                             data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
                             {%if it.InUse %}disabled{% endif %}
                             type="button">Deploy</button>
-                        <button id='{{ it.ID}}' class="btn btn-secondary"
+                        <button class="btn btn-secondary"
                             data-id="{{ it.ResourceID }}" data-abbr="{{ it.IncidentAbbrv }}" data-no="{{it.IncidentNumber }}"
                             type="button" >Reject</button>
                     </td>
@@ -118,6 +118,7 @@
             $('.success_msg').append("Vote Successfully Recorded");
             $('.success_msg').fadeOut();});
         button.prop('disabled', true);
+        button.siblings().prop("disabled", true);
     });
 </script>
 {% endblock %}

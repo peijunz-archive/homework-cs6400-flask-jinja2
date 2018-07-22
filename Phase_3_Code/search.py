@@ -49,7 +49,3 @@ def sql_string(keyword="", ESFNumber=None, radius=None, abbreviation=None, numbe
             sql.append(i[0])
             args += i[1]
     return '\n'.join(sql), tuple(args)
-
-def sql_format(s, args):
-    args = tuple(repr(i) for i in args)
-    return s%args

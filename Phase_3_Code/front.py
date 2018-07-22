@@ -106,6 +106,7 @@ def login():
         else:
             return "Login failed"
     else:
+        session.clear()
         return render_template("login.html")
 
 @app.route('/logout')
@@ -125,13 +126,13 @@ def main_menu():
     print(">>> Entering main menu", session)
     if 'username' not in session:
         return redirect("/login.html")
-
-    url = server + '/mainMenu?' + urlencode(extract(session, 'username'))
-    print("Sending", url)
-    r = requests.get(url)
-    print("Request content", r.content)
-    t = json.loads(r.content)
-    session['userinfo'] = t
+    if 'userinfo' not in session:
+        url = server + '/mainMenu?' + urlencode(extract(session, 'username'))
+        print("Sending", url)
+        r = requests.get(url)
+        print("Request content", r.content)
+        t = json.loads(r.content)
+        session['userinfo'] = t
     print(">>> userinfo: ", session.get('userinfo'))
     return render_template("menu.html", **extract(session, 'name', 'username', 'userinfo'))
 
