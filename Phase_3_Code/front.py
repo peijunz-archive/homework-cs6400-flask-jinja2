@@ -10,6 +10,12 @@ app = Flask(__name__)
 app.secret_key = '_5#y2L"F4Q8dATabASe64OOtEaMOi0]/'
 server = "http://127.0.0.1:5000"
 
+# Caching options for ESF, Declarations, Incidents, TimeUnit
+# during login session. When nocache is false, if one of these
+# is changed outside the application during a session, user
+# should login again to get updated data.
+NOCACHE = True
+
 '''Data Parsing'''
 def extract(form, *keys):
     '''Extract specified keys and values to construct F from form'''
@@ -52,7 +58,7 @@ def parseIncident(s, ind=0):
 
 '''Caching ESF TimeUnit Incidents and nextResourceID'''
 def getESF():
-    if 'ESF' not in session:
+    if NOCACHE or 'ESF' not in session:
         url = server + '/getESF'
         print("Sending", url)
         r = requests.get(url)
@@ -62,7 +68,7 @@ def getESF():
         # TO BE deleted ['(#{:02d}) {}'.format(n, name) for n, name in t]
 
 def getDeclarations():
-    if 'declarations' not in session:
+    if NOCACHE or 'declarations' not in session:
         url = server + '/getDeclarations'
         print("Sending", url)
         r = requests.get(url)
@@ -71,7 +77,7 @@ def getDeclarations():
         session['declarations'] = t
 
 def getTimeUnit():
-    if 'TimeUnit' not in session:
+    if NOCACHE or 'TimeUnit' not in session:
         url = server + '/getTimeUnit'
         print("Sending", url)
         r = requests.get(url)
@@ -80,7 +86,7 @@ def getTimeUnit():
         session['TimeUnit'] = t
 
 def getIncidents():
-    if 'incidents' not in session:
+    if NOCACHE or 'incidents' not in session:
         url = server + '/getIncidentsForUser?'+urlencode({"username": session['username']})
         print("Sending", url)
         r = requests.get(url)
@@ -211,8 +217,6 @@ def add_incident_do():
     print(">>> Entering Add incident do", session)
     if 'username' not in session:
         return redirect("/login.html")
-    #if 'incidentID' not in session:
-    #    return "Incident ID is already processed or expired!"
     F = extract(request.form)
     print("Original form", request.form)
     if not F.get('declaration', '') or len(F['declaration'])>50:
