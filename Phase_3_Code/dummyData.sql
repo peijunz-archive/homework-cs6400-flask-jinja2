@@ -61,7 +61,7 @@ INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `Numb
 
 
 
-INSERT INTO `Incidents` (`Number`, `Abbreviation`, `Date`, `Description`, `Longitude`, `Latitude`, `Username`) VALUES
+INSERT INTO `cs6400_summer18_team010`.`Incidents` (`Number`, `Abbreviation`, `Date`, `Description`, `Longitude`, `Latitude`, `Username`) VALUES
 (1, 'ED', '1990-01-03 00:00:00', 'Test', 1, 0, 'comp'),
 (2, 'ED', '2018-07-10 00:00:00', 'vbjh', 7, 5, 'comp'),
 (3, 'ED', '1998-12-01 00:00:00', 'test search', 3, 2, 'google'),
@@ -70,10 +70,10 @@ INSERT INTO `Incidents` (`Number`, `Abbreviation`, `Date`, `Description`, `Longi
 (6, 'ED', '1999-01-01 00:00:00', 'Test', 1, 1, 'jzm'),
 (7, 'ED', '2019-01-01 00:00:00', 'Xuming', 1, 1, 'shanghai'),
 (8, 'MD', '2010-01-01 00:00:00', 'Power cut', 2, 1, 'yimin'),
-(9, 'ED', '1998-01-01 00:00:00', 'Moha', 6, 0, 'boyred'),
+(9, 'ED', '1998-01-01 00:00:00', 'Moha', 6, 0, 'boyred');
 
 
-INSERT INTO `Resources` (`ID`, `Name`, `Latitude`, `Longitude`, `Model`, `MaxDistance`, `Cost`, `PrimaryESFNumber`, `UnitName`, `Username`) VALUES
+INSERT INTO `cs6400_summer18_team010`.`Resources` (`ID`, `Name`, `Latitude`, `Longitude`, `Model`, `MaxDistance`, `Cost`, `PrimaryESFNumber`, `UnitName`, `Username`) VALUES
 (1, 'Nameless', 0, 0, 'anonymous', 456, '0', 6, 'Day', 'jzm'),
 (2, 'water', 0, 0, 'pure', 456, '0', 1, 'Day', 'jzm'),
 (3, 'gold', 1, 2, 'test', 3, '4', 5, 'Day', 'jzm'),
@@ -92,4 +92,3 @@ INSERT INTO `Resources` (`ID`, `Name`, `Latitude`, `Longitude`, `Model`, `MaxDis
 (16, 'ChewingGum', 45, 34, 'Green Arrow', 1, '1', 11, 'Each', 'boyred'),
 (17, 'Life', 0, 1, 'one second', NULL, '1', 8, 'Each', 'boyred'),
 (18, 'Red Clothes', 0, 0, 'Much higher than all of you', 10000, '345', 12, 'Day', 'boyred');
-COMMIT;
