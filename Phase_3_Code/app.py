@@ -11,8 +11,12 @@ def sql_format(s, args):
 
 app = Flask(__name__)
 
-db = pymysql.connect("localhost", "user", "Mysql123!", "cs6400_summer18_team010")
+try:
+    from db_account_config_local import db_args, db_argv
+except:
+    from db_account_config import db_args, db_argv
 
+db = pymysql.connect(*db_args, **db_argv)
 
 @app.route("/")
 def index():

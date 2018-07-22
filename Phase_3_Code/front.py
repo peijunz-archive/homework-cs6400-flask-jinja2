@@ -106,6 +106,7 @@ def login():
         else:
             return "Login failed"
     else:
+        session.clear()
         return render_template("login.html")
 
 @app.route('/logout')
