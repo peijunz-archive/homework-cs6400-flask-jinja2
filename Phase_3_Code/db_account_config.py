@@ -4,4 +4,6 @@ db_args = (
     "Mysql123!",
     "cs6400_summer18_team010"
     )
-db_argv = {}
+db_argv = {
+    'autocommit':True,
+    }
