@@ -337,6 +337,7 @@ def report():
     r = requests.get(url)
     print("Request content", r.content)
     t = json.loads(r.content)
+    print(">>> Total Resources are", t)
     total = 0
     inuse = 0
     for i in t:
