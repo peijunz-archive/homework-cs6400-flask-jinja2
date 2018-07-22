@@ -186,12 +186,12 @@ def add_resource_do():
     capa = [i for i in F.get('capabilities', '').splitlines() if i]
     F['capabilities'] = capa
     addESF = request.form.getlist('additionalESFNumbers')
-    L = []
+    additional = []
     for i in addESF:
         v = parseESF(i)
-        if v is not None:
-            L.append(v)
-    F['additionalESFNumbers'] = L
+        if v is not None and v != F['primaryESFNumber']:
+            additional.append(v)
+    F['additionalESFNumbers'] = additional
     F['username'] = session['username']
     url = server+'/addResource'
     r = requests.post(url, json=F)
