@@ -114,9 +114,7 @@
                 number : button.data('no'),
                 action: button.text().trim()
             },
-            function(){
-            $('.success_msg').append("Vote Successfully Recorded");
-            $('.success_msg').fadeOut();});
+            function(){});
         button.prop('disabled', true);
         button.siblings().prop("disabled", true);
     });

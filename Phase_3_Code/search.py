@@ -25,9 +25,9 @@ def sql_string(keyword="", ESFNumber=None, radius=None, abbreviation=None, numbe
     tails = []
     # Change cols, Tables, conditions and tails accordingly
     if abbreviation and number is not None:
-        tails.append("Having proximity < COALESCE(MaxDistance, 100000)")
-        if radius:
-            tails.append(('AND proximity < %s', [radius]))
+        tails.append("Having proximity <= COALESCE(MaxDistance, 100000)")
+        if radius is not None:
+            tails.append(('AND proximity <= %s', [radius]))
         cols.append(proximity_formula)
         cols.append('(r.Username = ic.Username) AS Own')
         cols.append('r.MaxDistance')

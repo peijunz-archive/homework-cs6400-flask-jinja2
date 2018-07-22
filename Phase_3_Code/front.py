@@ -183,7 +183,7 @@ def add_resource_do():
         F[k] = parseObj(F.get(k, None))
         if F[k] is None:
             return "Error in key {}".format(k)
-    capa = [i for i in F.get('capabilities', '').splitlines() if i]
+    capa = [i for i in F.get('capabilities', '').splitlines() if i and 0<len(i.strip())<=50]
     F['capabilities'] = capa
     addESF = request.form.getlist('additionalESFNumbers')
     additional = []

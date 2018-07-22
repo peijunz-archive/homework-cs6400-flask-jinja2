@@ -10,7 +10,7 @@
     <div class="card-body">
         <h4>
         {% if incident %}
-            Results for <span class="incidentName text-primary">{{ incident }}</span>
+            Results of Resources for <span class="incidentName text-primary">{{ incident }}</span>
         {% else %}
             All Resources
         {% endif %}
@@ -127,9 +127,7 @@
                 action : dest.data('act'),
                 returnDate: $('#returnDate').val()
             },
-            function(){
-            $('.success_msg').append("Vote Successfully Recorded");
-            $('.success_msg').fadeOut();});
+            function(){});
         $('#requestModal').modal('toggle');
         var button = $("#action"+dest.data('id'));
         button.prop('disabled', true);
