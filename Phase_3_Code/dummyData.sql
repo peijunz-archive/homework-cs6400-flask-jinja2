@@ -58,3 +58,38 @@ INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VA
 INSERT INTO `cs6400_summer18_team010`.`Municipalities` (`Username`, `Category`) VALUES ('shanghai', 'City');
 INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('yimin', 'Yimin Food Company', '+1s');
 INSERT INTO `cs6400_summer18_team010`.`Companies` (`Username`, `Location`, `NumberofEmployees`) VALUES ('yimin', 'Shanghai', '100');
+
+
+
+INSERT INTO `Incidents` (`Number`, `Abbreviation`, `Date`, `Description`, `Longitude`, `Latitude`, `Username`) VALUES
+(1, 'ED', '1990-01-03 00:00:00', 'Test', 1, 0, 'comp'),
+(2, 'ED', '2018-07-10 00:00:00', 'vbjh', 7, 5, 'comp'),
+(3, 'ED', '1998-12-01 00:00:00', 'test search', 3, 2, 'google'),
+(4, 'ED', '1999-01-01 00:00:00', 'test', 6, 5, 'boyred'),
+(5, 'ED', '2489-12-08 00:00:00', 'second', 9, 8, 'boyred'),
+(6, 'ED', '1999-01-01 00:00:00', 'Test', 1, 1, 'jzm'),
+(7, 'ED', '2019-01-01 00:00:00', 'Xuming', 1, 1, 'shanghai'),
+(8, 'MD', '2010-01-01 00:00:00', 'Power cut', 2, 1, 'yimin'),
+(9, 'ED', '1998-01-01 00:00:00', 'Moha', 6, 0, 'boyred'),
+
+
+INSERT INTO `Resources` (`ID`, `Name`, `Latitude`, `Longitude`, `Model`, `MaxDistance`, `Cost`, `PrimaryESFNumber`, `UnitName`, `Username`) VALUES
+(1, 'Nameless', 0, 0, 'anonymous', 456, '0', 6, 'Day', 'jzm'),
+(2, 'water', 0, 0, 'pure', 456, '0', 1, 'Day', 'jzm'),
+(3, 'gold', 1, 2, 'test', 3, '4', 5, 'Day', 'jzm'),
+(4, 'gas', 1, 2, 'flagrant', 3, '4', 6, 'Day', 'jzm'),
+(5, 'gasoline', 1, 2, 'test', 3, '4', 1, 'Day', 'jzm'),
+(6, 'adobe', 1, 2, 'test', 3, '4', 1, 'Day', 'jzm'),
+(7, 'unknown flying object', 1, 2, 'test', 3, '4', 1, 'Day', 'jzm'),
+(8, 'cellphone', 1, 2, 'samsung', 3, '4', 1, 'Day', 'jzm'),
+(9, 'ufo', 1, 2, 'test', 3, '4', 1, 'Day', 'jzm'),
+(10, 'bowl', 1, 2, 'oriental', 3, '4', 1, 'Day', 'jzm'),
+(11, 'paper', 1, 2, 'test', 3, '4', 1, 'Day', 'jzm'),
+(12, 'chairs', 1, 2, 'wood', 3, '4', 1, 'Day', 'jzm'),
+(13, 'fire extinguisher', 1, 2, 'test', 3, '4', 4, 'Day', 'jzm'),
+(14, 'desks', 1, 2, 'lifetime', 3, '4', 1, 'Day', 'jzm'),
+(15, 'benches', 6, 7, 'long', 8, '9', 1, 'Day', 'jzm'),
+(16, 'ChewingGum', 45, 34, 'Green Arrow', 1, '1', 11, 'Each', 'boyred'),
+(17, 'Life', 0, 1, 'one second', NULL, '1', 8, 'Each', 'boyred'),
+(18, 'Red Clothes', 0, 0, 'Much higher than all of you', 10000, '345', 12, 'Day', 'boyred');
+COMMIT;
