@@ -19,7 +19,9 @@ def sql_string(keyword="", ESFNumber=None, radius=None, abbreviation=None, numbe
               'LEFT JOIN InUse i ON r.ID = i.ResourceID']
     conditions = []
     if keyword:
-        conditions.append(('r.Name like %s', ['%{}%'.format(keyword)]))
+        conditions.append(('''(r.Name like %s OR r.Model like %s OR EXISTS
+            (SELECT * FROM Capabilities c WHERE c.ResourceID = r.ID AND c.CapabilityName like %s))''',
+            ['%{}%'.format(keyword)]*3))
     if ESFNumber:
         conditions.append((ESFcond, [ESFNumber, ESFNumber]))
     tails = []

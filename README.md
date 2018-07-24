@@ -27,7 +27,7 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 1. Set up mysql database on local machine
 2. Install python 3.6.2
 3. Install pipenv (http://docs.python-guide.org/en/latest/dev/virtualenvs/)
-4. cd into `Phase_3_Code` directory
+4. `cd` into `Phase\ 3` directory
 5. Run this command: `pipenv install`
 
 ### Instructions to start front end service
@@ -35,7 +35,8 @@ https://docs.google.com/document/d/1MEc4gNFgaqTnb-r9JJIAJCIGZHEZ-WtO4jTbF3ewCMA/
 2. Go to http://127.0.0.1:5555 on your browser, and your will be redirected to login page
 
 ### Instructions to start backend service:
-1. In app.py file, you may need to change connection strings at line 5.
+1. You may need to create `db_account_config_local.py` and edit your connection strings
+    + As an template, `db_account_config.py` is the default config file that you should not change
 2. Run this command: `pipenv run python app.py`
 3. Go to http://127.0.0.1:5000 on your browser and you should see "Welcome to Emergency Resource Management System Web Service!".
 

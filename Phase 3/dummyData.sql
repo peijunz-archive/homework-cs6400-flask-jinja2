@@ -24,13 +24,13 @@ INSERT INTO `cs6400_summer18_team010`.`ESF` (`Number`, `Description`) VALUES ('1
 INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Hour');
 INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Day');
 INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Week');
+INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Each');
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('MD', 'Major Disaster');
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('ED', 'Emergency');
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('FM', 'Fire Management Assistance');
 INSERT INTO `cs6400_summer18_team010`.`Declarations` (`Abbreviation`, `Name`) VALUES ('FS', 'Fire Suppression Authorization');
 
 -- 07/19 update
-INSERT INTO `cs6400_summer18_team010`.`TimeUnit` (`Name`) VALUES ('Each');
 INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fire', 'Fire & Rescue', 'Fire');
 INSERT INTO `cs6400_summer18_team010`.`GovAgencies` (`Username`, `AgencyNameLocalOffice`) VALUES ('fire', 'Burlington Vermont Fire & Rescue');
 INSERT INTO `cs6400_summer18_team010`.`User` (`Username`, `Name`, `Password`) VALUES ('fema', 'FEMA', 'FEMA');
