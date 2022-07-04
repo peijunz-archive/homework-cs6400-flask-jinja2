@@ -13,11 +13,11 @@ def sql_format(s, args):
 app = Flask(__name__)
 
 try:
-    from db_account_config_local import db_args, db_argv
+    from db_account_config_local import db_kwargs
 except:
-    from db_account_config import db_args, db_argv
+    from db_account_config import db_kwargs
 
-db = pymysql.connect(*db_args, **db_argv)
+db = pymysql.connect(**db_kwargs)
 
 @app.route("/")
 def index():

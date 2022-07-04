@@ -1,9 +1,7 @@
-db_args = (
-    "localhost",
-    "user",
-    "Mysql123!",
-    "cs6400_summer18_team010"
+db_kwargs = dict(
+    host='localhost',
+    user='user',
+    password='passwd',
+    database='db',
+    autocommit=True,
     )
-db_argv = {
-    'autocommit':True,
-    }
